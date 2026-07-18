@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_StickyKitchen/Scenes/MainMenu.unity
+    guid: 5ba48a404c074cb49bbd241017ec12da
+  - enabled: 1
+    path: Assets/_StickyKitchen/Scenes/LevelMap.unity
+    guid: b555c35cb35755a43983bcaa8a7cd130
+  - enabled: 1
     path: Assets/_StickyKitchen/Scenes/Game.unity
     guid: 458ad889e0bb343439630da4df1c70f4
   m_configObjects:
