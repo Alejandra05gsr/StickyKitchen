@@ -13,9 +13,6 @@ public class Shoot : MonoBehaviour
     public GameObject fluidObjectType1;
     public GameObject fluidObjectType2;
 
-    [Header("Fluid Settings")]
-    public float surfaceOffset = 0.02f;
-    public float normalLength = 0.5f;
 
 
     // Update is called once per frame
@@ -78,7 +75,7 @@ public class Shoot : MonoBehaviour
 
     void CreateFluid(GameObject prefab, RaycastHit hit)
     {
-        Vector3 spawnPosition = hit.point + hit.normal * surfaceOffset;
+        Vector3 spawnPosition = hit.point + hit.normal * 0.02f;
 
         Vector3 forward = Vector3.ProjectOnPlane(gunTransform.forward, hit.normal).normalized;
 
