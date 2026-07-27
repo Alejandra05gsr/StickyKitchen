@@ -626,13 +626,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 982885243}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: 3.6151, z: 5.11}
+  m_LocalRotation: {x: -0, y: -0, z: 0.19081418, w: 0.9816262}
+  m_LocalPosition: {x: -7.76, y: 2.87, z: 5.11}
   m_LocalScale: {x: 1, y: 6.2302, z: 6.3876595}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 22.001}
 --- !u!1 &1462988327
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,15 +752,11 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 192
-  layerMask1:
-    serializedVersion: 2
-    m_Bits: 64
-  layerMask2:
-    serializedVersion: 2
-    m_Bits: 128
   gunTransform: {fileID: 6745144}
   fluidObjectType1: {fileID: 3351849835411577124, guid: 9773ac99cd6b5b84e986ad1fdfe1aaa5, type: 3}
   fluidObjectType2: {fileID: 6798548024129009308, guid: d3bd053842776d94688a76409a272371, type: 3}
+  surfaceOffset: 0.5
+  normalLength: 0.5
 --- !u!1 &1730482911
 GameObject:
   m_ObjectHideFlags: 0

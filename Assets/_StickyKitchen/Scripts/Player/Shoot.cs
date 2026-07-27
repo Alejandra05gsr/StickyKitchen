@@ -4,14 +4,19 @@ using static UnityEngine.UI.Image;
 
 public class Shoot : MonoBehaviour
 {
-    public float raycastDistance;
+    [Header("Raycast Settings")]
+    public float raycastDistance = 20f;
     public LayerMask layerMask;
-    public LayerMask layerMask1;
-    public LayerMask layerMask2;
     public Transform gunTransform;
 
+    [Header("Fluid Prefabs")]
     public GameObject fluidObjectType1;
     public GameObject fluidObjectType2;
+
+    [Header("Fluid Settings")]
+    public float surfaceOffset = 0.02f;
+    public float normalLength = 0.5f;
+
 
     // Update is called once per frame
     void Update()
@@ -19,36 +24,6 @@ public class Shoot : MonoBehaviour
         ShootGun();
     }
 
-    void CheckRaycast()
-    {
-        RaycastHit hit;
-        Vector3 origin = gunTransform.transform.position;
-        Vector3 direction = transform.forward;
-
-        if (Physics.Raycast(origin, direction, out hit, raycastDistance, layerMask))
-        {
-            Debug.Log("Disparo");
-            if(hit.collider.gameObject.layer == 6) 
-            {
-                Debug.Log("Hit: " + hit.collider.gameObject.name);
-                Debug.DrawLine(origin, hit.point, Color.green);
-                AppearFluidType1(hit.point);
-            }
-            else if (hit.collider.gameObject.layer == 7)
-            {
-                Debug.Log("Hit: " + hit.collider.gameObject.name);
-                Debug.DrawLine(origin, hit.point, Color.green);
-                AppearFluidType2(hit.point);
-            }
-
-
-        }
-        else
-        {
-            Debug.DrawLine(origin, origin + direction * raycastDistance, Color.red);
-        }
-
-    }
 
     void ShootGun()
     {
@@ -58,15 +33,62 @@ public class Shoot : MonoBehaviour
         }
     }
 
-
-    void AppearFluidType1(Vector3 hitPosition)
+    void CheckRaycast()
     {
-        Instantiate(fluidObjectType1, hitPosition, fluidObjectType1.transform.rotation);
+        RaycastHit hit;
+
+        Vector3 origin = gunTransform.transform.position;
+        Vector3 direction = transform.forward;
+
+        if (Physics.Raycast(origin, direction, out hit, raycastDistance, layerMask))
+        {
+            Debug.Log("Hit: " + hit.collider.gameObject.name);
+            Debug.DrawLine(origin, hit.point, Color.green);
+
+            switch (hit.collider.gameObject.layer)
+            {
+                case 6:
+                    CreateFluid(fluidObjectType1, hit);
+                    break;
+
+                case 7:
+                    CreateFluid(fluidObjectType2, hit);
+                    break;
+            }
+        }
+        else
+        {
+            Debug.DrawLine(origin, origin + direction * raycastDistance, Color.red);
+        }
+
     }
 
-    void AppearFluidType2(Vector3 hitPosition)
+
+
+    void AppearFluidType1(RaycastHit hit)
     {
-        Instantiate(fluidObjectType2, hitPosition, fluidObjectType2.transform.rotation);
+        CreateFluid(fluidObjectType1, hit);
     }
+
+    void AppearFluidType2(RaycastHit hit)
+    {
+        CreateFluid(fluidObjectType2, hit);
+    }
+
+
+    void CreateFluid(GameObject prefab, RaycastHit hit)
+    {
+        Vector3 spawnPosition = hit.point + hit.normal * surfaceOffset;
+
+        Vector3 forward = Vector3.ProjectOnPlane(gunTransform.forward, hit.normal).normalized;
+
+        Quaternion rotation = Quaternion.LookRotation(forward, hit.normal);
+
+        GameObject fluid = Instantiate(prefab, spawnPosition, rotation);
+    }
+
+
+
+
 
 }
