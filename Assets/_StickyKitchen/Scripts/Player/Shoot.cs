@@ -8,10 +8,11 @@ public class Shoot : MonoBehaviour
     public float raycastDistance = 20f;
     public LayerMask layerMask;
     public Transform gunTransform;
+    public Transform cameraTransform;
 
     [Header("Fluid Prefabs")]
-    public GameObject fluidObjectType1;
-    public GameObject fluidObjectType2;
+    public GameObject Range01;
+    public GameObject Range02;
 
 
 
@@ -34,22 +35,22 @@ public class Shoot : MonoBehaviour
     {
         RaycastHit hit;
 
-        Vector3 origin = gunTransform.transform.position;
-        Vector3 direction = transform.forward;
+        Vector3 origin = gunTransform.position;
+        Vector3 direction = cameraTransform.forward;
 
         if (Physics.Raycast(origin, direction, out hit, raycastDistance, layerMask))
         {
-            Debug.Log("Hit: " + hit.collider.gameObject.name);
-            Debug.DrawLine(origin, hit.point, Color.green);
+            //Debug.Log("Hit: " + hit.collider.gameObject.name);
+            Debug.DrawLine(origin, hit.point, Color.green, 2f);
 
             switch (hit.collider.gameObject.layer)
             {
                 case 6:
-                    CreateFluid(fluidObjectType1, hit);
+                    CreateFluid(Range01, hit);
                     break;
 
                 case 7:
-                    CreateFluid(fluidObjectType2, hit);
+                    CreateFluid(Range02, hit);
                     break;
             }
         }
@@ -64,12 +65,12 @@ public class Shoot : MonoBehaviour
 
     void AppearFluidType1(RaycastHit hit)
     {
-        CreateFluid(fluidObjectType1, hit);
+        CreateFluid(Range01, hit);
     }
 
     void AppearFluidType2(RaycastHit hit)
     {
-        CreateFluid(fluidObjectType2, hit);
+        CreateFluid(Range02, hit);
     }
 
 
