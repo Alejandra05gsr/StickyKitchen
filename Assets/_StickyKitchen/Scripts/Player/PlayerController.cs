@@ -87,10 +87,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             SetAimingState(true);
+            //El bool de disparar va a ser true
         }
         else if (Input.GetMouseButtonUp(1))
         {
             SetAimingState(false);
+            //El bool de disparar va a ser falso
         }
     }
 

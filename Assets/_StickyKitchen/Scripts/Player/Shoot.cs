@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.UI.Image;
@@ -14,6 +15,25 @@ public class Shoot : MonoBehaviour
     public GameObject Range01;
     public GameObject Range02;
 
+    [Header("Ammo")]
+    public int maxWaterAmmo;
+    public int actualWaterAmmo;
+    public int maxSyrupAmmo;
+    public int actualSyrupAmmo;
+
+    public bool canShoot;
+
+    public int actualFluid;
+    public int idWater;
+    public int idSyrup;
+
+
+    private void Start()
+    {
+        ReloadWaterAmmo();
+        ReloadSyrupAmmo();
+       
+    }
 
 
     // Update is called once per frame
@@ -25,9 +45,14 @@ public class Shoot : MonoBehaviour
 
     void ShootGun()
     {
+        //Si se aprieta el boton y can shoot es true se dispara
         if (Input.GetMouseButtonDown(0))
         {
+            //Checar arma
+            //Checar municion
             CheckRaycast();
+
+            actualWaterAmmo -= 1;
         }
     }
 
@@ -86,7 +111,30 @@ public class Shoot : MonoBehaviour
     }
 
 
+    void ReloadWaterAmmo()
+    {
+        actualWaterAmmo = maxWaterAmmo;
+    }
 
+    void ReloadSyrupAmmo()
+    {
+        actualSyrupAmmo = maxSyrupAmmo;
+    }
+
+    public void CanShoot()
+    {
+        //Primero checa el tipo de arma
+
+        //Checa si hay munición suficiente
+
+
+
+    }
+
+    public void ChangeTypeOfFluid()
+    {
+        //Si se le da click a la E entonces cambia 
+    }
 
 
 }
