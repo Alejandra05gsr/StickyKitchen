@@ -1,18 +1,20 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Product : MonoBehaviour
 {
+    private int idProduct;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        TypeOfProduct(idProduct);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
 
@@ -39,15 +41,7 @@ public class Product : MonoBehaviour
                 idProduct = 5;
                 break ;
         }
+        //Debug.Log("Type: " + idProduct);
     }
-
-    public void OnCollisionEnter(Collision collision)
-    {
-        if(gameObject.CompareTag("Player"))
-        {
-            this.gameObject.SetActive(false);
-        }
-    }
-
 
 }
