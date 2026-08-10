@@ -7,9 +7,17 @@ public class FluidArea : MonoBehaviour
     public int gridSize = 5;          
     public float spacing = 0.5f;
 
-    [Header("Colors")]
+    [Header("WaterColors")]
     public Color strongBlue = Color.blue;                      
-    public Color lightBlue = new Color(0.6f, 0.8f, 1f);       
+    public Color lightBlue = new Color(0.6f, 0.8f, 1f);
+    public bool isWaterFluid;
+
+    [Header("OrangeColors")]
+    public Color strongOrange = Color.orange;                      
+    public Color lightOrange = new Color(1f, 0.6f, 0.2f);
+    public bool isSyrupFluid;
+    
+    
    
 
     void Start()
@@ -68,11 +76,23 @@ public class FluidArea : MonoBehaviour
             //Peso de los nodos
             float nodeValue = floorCloseness * 100f;
 
-            //Colorea los nodos
-            Renderer render = node.GetComponent<Renderer>();
-            if (render != null)
+            if (isWaterFluid)
             {
-                render.material.color = Color.Lerp(lightBlue, strongBlue, floorCloseness);
+                //Colorea los nodos
+                Renderer render = node.GetComponent<Renderer>();
+                if (render != null)
+                {
+                    render.material.color = Color.Lerp(lightBlue, strongBlue, floorCloseness);
+                }
+            }
+            else if (isSyrupFluid)
+            {
+                //Colorea los nodos
+                Renderer render = node.GetComponent<Renderer>();
+                if (render != null)
+                {
+                    render.material.color = Color.Lerp(lightOrange, strongOrange, floorCloseness);
+                }
             }
         }
     }

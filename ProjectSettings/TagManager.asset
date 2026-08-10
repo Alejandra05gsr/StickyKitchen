@@ -10,6 +10,8 @@ TagManager:
   - Chocolate
   - Milk
   - Sugar
+  - WaterAmmo
+  - SyrupAmmo
   layers:
   - Default
   - TransparentFX
@@ -21,7 +23,7 @@ TagManager:
   - Object
   - Floor
   - Wall
-  - 
+  - Ground
   - 
   - 
   - 

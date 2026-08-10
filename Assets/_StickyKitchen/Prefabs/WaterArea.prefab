@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4887667227936852128}
   - component: {fileID: 3588220570709768536}
   m_Layer: 0
-  m_Name: Range
+  m_Name: WaterArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,6 +129,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FluidArea
   cylinderPrefab: {fileID: 5023720622226517206, guid: c5d6d58c773da6d46867e9bfaf1b7af8, type: 3}
   gridSize: 5
-  nodeSpacing: 0.5
-  centerColor: {r: 0, g: 1, b: 0, a: 1}
-  edgeColor: {r: 1, g: 0, b: 0, a: 1}
+  spacing: 0.5
+  strongBlue: {r: 0, g: 0, b: 1, a: 1}
+  lightBlue: {r: 0.6, g: 0.8, b: 1, a: 1}
+  isWaterFluid: 1
+  strongOrange: {r: 1, g: 0.6470588, b: 0, a: 1}
+  lightOrange: {r: 0.990566, g: 0.85272783, b: 0.71488965, a: 1}
+  isSyrupFluid: 0
