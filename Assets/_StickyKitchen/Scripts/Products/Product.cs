@@ -3,45 +3,49 @@ using UnityEngine;
 
 public class Product : MonoBehaviour
 {
-    private int idProduct;
+    public int idProduct;
+    public int currentProd;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        TypeOfProduct(idProduct);
+        CheckTypeOfProduct();
     }
 
-    // Update is called once per frame
     void Update()
     {
 
     }
 
-
-    public void TypeOfProduct(int idProduct)
+    void CheckTypeOfProduct()
     {
-        switch(this.gameObject.tag)
+        switch (this.gameObject.tag)
         {
             case "Flour":
                 idProduct = 0;
                 break;
-            case "Eggs":
-                idProduct = 1;
-                break ;
             case "Butter":
+                idProduct = 1;
+                break;
+            case "Eggs":
                 idProduct = 2;
-                break ;
+                break;
             case "Chocolate":
                 idProduct = 3;
-                break ;
+                break;
             case "Milk":
                 idProduct = 4;
-                break ;
+                break;
             case "Sugar":
                 idProduct = 5;
-                break ;
+                break;
         }
         //Debug.Log("Type: " + idProduct);
+        TypeOfProduct(currentProd);
+    }
+
+    public void TypeOfProduct(int idCurrentProduct)
+    {
+        idCurrentProduct = idProduct;
     }
 
 }

@@ -6,68 +6,65 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
 
-    public float moveSpeed;
-    public Vector2 sensitivity;
+    [Header("Movement")]
+    public float moveSpeed = 7f;
+    public float jumpForce = 6f;
 
-    public Transform camera;
+    [Header("Camera")]
+    public Transform playerCamera;
+    public float mouseSensitivity = 2f;
+    private float xRotation = 0f;
 
-
+    [Header("Ground")]
+    public bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Cursor.lockState = CursorLockMode.Locked;
-    }
 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 
     void Update()
     {
-        Movement();
-        CameraLook();
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        transform.Rotate(Vector3.up * mouseX);
+
+        if (playerCamera != null)
+        {
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -80f, 80f);
+            playerCamera.localEulerAngles = new Vector3(xRotation, 0f, 0f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
     }
 
-    private void Movement()
+    void FixedUpdate()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
-        if (horizontal != 0 || vertical != 0)
-        {
-            Vector3 direction = (transform.forward * vertical + transform.right * horizontal).normalized;
+        Vector3 moveDir = (transform.forward * vertical + transform.right * horizontal).normalized;
 
-            rb.linearVelocity = direction * moveSpeed;
-        }
-
+        rb.linearVelocity = new Vector3(moveDir.x * moveSpeed, rb.linearVelocity.y, moveDir.z * moveSpeed);
     }
 
-    private void CameraLook()
+    
+    private void OnCollisionStay(Collision collision)
     {
-        float horizontal = Input.GetAxis("Mouse X");
-        float vertical = Input.GetAxis("Mouse Y");
-
-        if (horizontal != 0)
-        {
-            transform.Rotate(0, horizontal * sensitivity.x, 0);
-            transform.Rotate(0, vertical * sensitivity.y, 0);
-        }
-
-
-        if (vertical != 0)
-        {
-            Vector3 rotation = camera.localEulerAngles;
-            rotation.x = (rotation.x - vertical * sensitivity.y + 360) % 360;
-            if (rotation.x > 180 && rotation.x < 180)
-            {
-                rotation.x = 80;
-            }
-            else if (rotation.x < 280 && rotation.x > 180)
-            {
-                rotation.x = 280;
-            }
-
-            camera.localEulerAngles = rotation;
-        }
-
+        isGrounded = true;
     }
 
+    private void OnCollisionExit(Collision collision)
+    {
+        isGrounded = false;
+    }
 }

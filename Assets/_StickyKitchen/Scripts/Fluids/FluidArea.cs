@@ -28,12 +28,10 @@ public class FluidArea : MonoBehaviour
 
     void GenerateAndColorGrid()
     {
-        //-Crea un arreglo de nodos-
         GameObject[] allNodes = new GameObject[gridSize * gridSize];
         int index = 0;
         float halfSize = (gridSize - 1) * spacing / 2f;
 
-        //-Crea la malla de cilindros-
         for (int x = 0; x < gridSize; x++)
         {
             for (int z = 0; z < gridSize; z++)
@@ -48,7 +46,6 @@ public class FluidArea : MonoBehaviour
             }
         }
 
-        //-Encuentra en Y el nodo mas cerca y lejos del piso-
         float lowestY = float.MaxValue;
         float highestY = float.MinValue;
 
@@ -61,7 +58,6 @@ public class FluidArea : MonoBehaviour
 
         float heightDifference = highestY - lowestY;
 
-        //-Agregamos color a cada nodo basado en su cercania al piso-
         foreach (GameObject node in allNodes)
         {
             float currentY = node.transform.position.y;
@@ -73,12 +69,10 @@ public class FluidArea : MonoBehaviour
                 floorCloseness = 1f - ((currentY - lowestY) / heightDifference);
             }
 
-            //Peso de los nodos
             float nodeValue = floorCloseness * 100f;
 
             if (isWaterFluid)
             {
-                //Colorea los nodos
                 Renderer render = node.GetComponent<Renderer>();
                 if (render != null)
                 {
@@ -87,7 +81,6 @@ public class FluidArea : MonoBehaviour
             }
             else if (isSyrupFluid)
             {
-                //Colorea los nodos
                 Renderer render = node.GetComponent<Renderer>();
                 if (render != null)
                 {
