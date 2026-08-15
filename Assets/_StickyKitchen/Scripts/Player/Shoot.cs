@@ -24,18 +24,13 @@ public class Shoot : MonoBehaviour
     [SerializeField] private GameObject syrupShader;
 
 
-    [Header("Object Pooling Settings")]
-    [SerializeField] private int initialPoolSize = 15;
-    private List<GameObject> waterPool = new List<GameObject>();
-    private List<GameObject> syrupPool = new List<GameObject>();
-
 
     [Header("Water Ammo")]
     private int currentWaterAmmo;
     [SerializeField] private int maxWaterAmmo = 10;
     private float currentWaterShader;
     [SerializeField] public float maxWaterShader = 1f;
-    //[SerializeField] public float waterShaderFillSpeed = 0.5f;
+  
 
 
 
@@ -44,8 +39,11 @@ public class Shoot : MonoBehaviour
     [SerializeField] private int maxSyrupAmmo = 10;
     private float currentSyrupShader;
     [SerializeField] public float maxSyrupShader = 1f;
-    //[SerializeField] public float syrupShaderFillSpeed = 0.5f;
 
+
+    [Header("Shader Range Adjustments")]
+    [SerializeField] private float minFillValue = -1f; // Si 0 es la mitad, pon aquí el valor cuando está vacío (ej. -0.5 o -1)
+    [SerializeField] private float maxFillValue = 1f;  // El valor cuando está completamente lleno (ej. 0.5 o 1)
 
 
     [Header("State")]
@@ -66,19 +64,12 @@ public class Shoot : MonoBehaviour
 
     private void Start()
     {
-        //LLenamos al máximo los shaders de agua y jarabe
-        currentWaterShader = maxWaterShader;
-        currentSyrupShader = maxSyrupShader;
-        UpdateShaders();
-
-        //Recargamos toda la munición al inicio del juego
         ReloadAllAmmo();
     }
 
 
     private void Update()
     {
-        //Inputs de disparo y cambio de fluido
         HandleInput();
     }
 
@@ -96,15 +87,13 @@ public class Shoot : MonoBehaviour
     }
 
     private void TryShoot()
-    {
-        //Checa si hay munición para el fluido actual antes de disparar
+    {  
         if (!HasAmmoForCurrentFluid())
         {
             Debug.Log("Sin munición para " + currentFluid);
             return;
         }
 
-        //Realiza un raycast para determinar dónde disparar el fluido
         if (CheckRaycast(out RaycastHit hit))
         {
             GameObject prefabToInstantiate = (currentFluid == FluidType.Water) ? waterPrefab : syrupPrefab;
@@ -166,14 +155,18 @@ public class Shoot : MonoBehaviour
         if (currentFluid == FluidType.Water)
         {
             currentWaterAmmo -= 1;
-            currentWaterShader -= 0.2f;
+            // Calculamos el porcentaje (0.0 a 1.0)
+            float pct = (float)currentWaterAmmo / maxWaterAmmo;
+            // Lo mapeamos al rango real del shader (minFillValue a maxFillValue)
+            currentWaterShader = Mathf.Lerp(minFillValue, maxFillValue, pct);
         }
         else if (currentFluid == FluidType.Syrup)
         {
             currentSyrupAmmo -= 1;
-            currentSyrupShader -= 0.2f;
+            float pct = (float)currentSyrupAmmo / maxSyrupAmmo;
+            currentSyrupShader = Mathf.Lerp(minFillValue, maxFillValue, pct);
         }
-        //Update del ammo y shader 
+
         UpdateShaders();
     }
 
@@ -189,6 +182,12 @@ public class Shoot : MonoBehaviour
     {
         currentWaterAmmo = maxWaterAmmo;
         currentSyrupAmmo = maxSyrupAmmo;
+
+        // Al recargar, asignamos el valor máximo del shader
+        currentWaterShader = maxFillValue;
+        currentSyrupShader = maxFillValue;
+
+        UpdateShaders();
     }
 
 
@@ -197,16 +196,15 @@ public class Shoot : MonoBehaviour
         if (other.CompareTag("WaterAmmo"))
         {
             currentWaterAmmo = maxWaterAmmo;
-            currentWaterShader = maxWaterShader;
+            currentWaterShader = maxFillValue;
             UpdateShaders();
         }
         else if (other.CompareTag("SyrupAmmo"))
         {
             currentSyrupAmmo = maxSyrupAmmo;
-            currentSyrupShader = maxSyrupShader;
+            currentSyrupShader = maxFillValue;
             UpdateShaders();
         }
-
     }
 
 

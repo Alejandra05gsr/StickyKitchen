@@ -19,10 +19,13 @@ public class Wobble : MonoBehaviour
     float pulse;
     float time = 0.5f;
 
+    
     // Use this for initialization
     void Start()
     {
         rend = GetComponent<Renderer>();
+        lastPos = transform.position;
+        lastRot = transform.rotation.eulerAngles;
     }
     private void Update()
     {
@@ -40,10 +43,11 @@ public class Wobble : MonoBehaviour
         rend.material.SetFloat("_WobbleX", wobbleAmountX);
         rend.material.SetFloat("_WobbleZ", wobbleAmountZ);
 
-        // velocity
-        velocity = (lastPos - transform.position) / Time.deltaTime;
-        angularVelocity = transform.rotation.eulerAngles - lastRot;
+        // velocity (CAMBIO: Convertido a espacio local del objeto)
+        Vector3 worldVelocity = (transform.position - lastPos) / Time.deltaTime;
+        velocity = transform.InverseTransformDirection(worldVelocity);
 
+        angularVelocity = transform.rotation.eulerAngles - lastRot;
 
         // add clamped velocity to wobble
         wobbleAmountToAddX += Mathf.Clamp((velocity.x + (angularVelocity.z * 0.2f)) * MaxWobble, -MaxWobble, MaxWobble);

@@ -7,6 +7,8 @@ public class Order : MonoBehaviour
     public GameObject Product03;
 
     public GameObject Completed_txt;
+    public GameObject FinalScore;
+
 
     bool Prod01 = true;
     bool Prod02 = true;
@@ -47,6 +49,11 @@ public class Order : MonoBehaviour
         if(!Prod01 && !Prod02 && !Prod03)
         {
             Completed_txt.SetActive(true);
+            FinalScore.SetActive(true);
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
         }
     }
 

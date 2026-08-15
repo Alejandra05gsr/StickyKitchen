@@ -4,6 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class ChangeScene : MonoBehaviour
 {
+    public void ChangeToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void ChangeToLevelMap()
     {
         SceneManager.LoadScene("LevelMap");
