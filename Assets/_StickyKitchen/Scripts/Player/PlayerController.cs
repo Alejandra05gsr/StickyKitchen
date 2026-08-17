@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+        //Hacer que el jugador ya no se pueda mover cuando se acabe el juego
+
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 

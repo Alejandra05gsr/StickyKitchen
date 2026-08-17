@@ -9,6 +9,8 @@ public class Order : MonoBehaviour
     public GameObject Completed_txt;
     public GameObject FinalScore;
 
+    public Score score;
+
 
     bool Prod01 = true;
     bool Prod02 = true;
@@ -48,13 +50,19 @@ public class Order : MonoBehaviour
     {
         if(!Prod01 && !Prod02 && !Prod03)
         {
+            score.GetComponent<Score>().CalculateTotalPoints();
+
             Completed_txt.SetActive(true);
-            FinalScore.SetActive(true);
-
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-
+            Invoke("HideOrder", 3);
         }
     }
+
+    void HideOrder()
+    {
+        //fade de desaparecer y recorrer las otras ordenes
+        //Se quita que sea la current order
+        this.gameObject.SetActive(false);
+    }
+
 
 }

@@ -12,8 +12,11 @@ public class GrabProduct : MonoBehaviour
     public TextMeshProUGUI dropText;
 
     private int idGrabbedProduct;
+    private int productPoints;
 
     public GameObject order;
+
+    public Score score;
 
 
     void Start()
@@ -67,7 +70,8 @@ public class GrabProduct : MonoBehaviour
         Product prodScript = productGrabbed.GetComponent<Product>();
         if (prodScript != null)
         {
-            idGrabbedProduct = prodScript.idProduct; 
+            idGrabbedProduct = prodScript.idProduct;
+            productPoints = prodScript.points;
         }
 
 
@@ -129,9 +133,10 @@ public class GrabProduct : MonoBehaviour
     {
         if (productGrabbed == null) return;
         
-        productGrabbed.GetComponent<Product>().TypeOfProduct(idGrabbedProduct);
-        Debug.Log("Producto entregado: " + productGrabbed.name + " con ID: " + idGrabbedProduct);
+        productGrabbed.GetComponent<Product>().TypeOfProduct(idGrabbedProduct, productPoints);
+        Debug.Log("Producto entregado: " + productGrabbed.name + " con ID: " + idGrabbedProduct + ", Puntos: " + productPoints);
 
+        //Visualización de interfaz de pedidos
         switch (idGrabbedProduct)
         {
             case 0:
@@ -145,7 +150,12 @@ public class GrabProduct : MonoBehaviour
                 break;
         }
 
+        
+        //Se llama a la función de Score para ir sumando los puntos
+        score.GetComponent<Score>().AddPoints(productPoints);
 
+
+        //Se quita el objeto del jugador
         Rigidbody rb = productGrabbed.GetComponent<Rigidbody>();
         if (rb != null)
         {
