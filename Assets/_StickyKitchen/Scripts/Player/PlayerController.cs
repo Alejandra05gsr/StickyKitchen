@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 7f;
     public float jumpForce = 6f;
+    bool canMove;
 
     [Header("Camera")]
     public Transform playerCamera;
@@ -24,6 +25,8 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        canMove = true;
     }
 
     void Update()
@@ -50,8 +53,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
     void FixedUpdate()
     {
+       Move();
+    }
+
+    void Move()
+    {
+        if (!canMove) return;
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -59,6 +69,7 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector3(moveDir.x * moveSpeed, rb.linearVelocity.y, moveDir.z * moveSpeed);
     }
+
 
     
     private void OnCollisionStay(Collision collision)
@@ -70,4 +81,11 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = false;
     }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
+
+
 }

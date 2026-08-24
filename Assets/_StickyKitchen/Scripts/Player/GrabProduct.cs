@@ -136,19 +136,19 @@ public class GrabProduct : MonoBehaviour
         productGrabbed.GetComponent<Product>().TypeOfProduct(idGrabbedProduct, productPoints);
         Debug.Log("Producto entregado: " + productGrabbed.name + " con ID: " + idGrabbedProduct + ", Puntos: " + productPoints);
 
-        //Visualización de interfaz de pedidos
-        switch (idGrabbedProduct)
-        {
-            case 0:
-                order.gameObject.GetComponent<Order>().TurnOffProduct01();
-                break;
-            case 1:
-                order.gameObject.GetComponent<Order>().TurnOffProduct02();
-                break;
-            case 2:
-                order.gameObject.GetComponent<Order>().TurnOffProduct03();
-                break;
-        }
+        ////Visualización de interfaz de pedidos
+        //switch (idGrabbedProduct)
+        //{
+        //    case 0:
+        //        order.gameObject.GetComponent<Order>().TurnOffProduct01();
+        //        break;
+        //    case 1:
+        //        order.gameObject.GetComponent<Order>().TurnOffProduct02();
+        //        break;
+        //    case 2:
+        //        order.gameObject.GetComponent<Order>().TurnOffProduct03();
+        //        break;
+        //}
 
         
         //Se llama a la función de Score para ir sumando los puntos

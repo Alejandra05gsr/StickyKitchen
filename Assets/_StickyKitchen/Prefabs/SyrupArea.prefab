@@ -32,7 +32,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.51, z: 0}
   m_LocalScale: {x: 1, y: 0.0133175, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6277362858849085103}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3107692311936782111
@@ -136,3 +137,65 @@ MonoBehaviour:
   strongOrange: {r: 1, g: 0.6470588, b: 0, a: 1}
   lightOrange: {r: 0.990566, g: 0.85272783, b: 0.71488965, a: 1}
   isSyrupFluid: 1
+--- !u!1001 &5833379237565307849
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 570268029294099814}
+    m_Modifications:
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5023720622226517206, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+      propertyPath: m_Name
+      value: Syrup
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+--- !u!4 &6277362858849085103 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 570268029294099814, guid: 94bba7101684c8c449dfb97d8366decf, type: 3}
+  m_PrefabInstance: {fileID: 5833379237565307849}
+  m_PrefabAsset: {fileID: 0}

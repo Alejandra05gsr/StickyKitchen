@@ -1,68 +1,37 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Order : MonoBehaviour
 {
-    public GameObject Product01;
-    public GameObject Product02;
-    public GameObject Product03;
+    [Header("UI References")]
+    [SerializeField] private Image[] ingredientSlots; // Arrastra aquí los 4 componentes Image del Prefab
+    [SerializeField] private GameObject completedTxt;
 
-    public GameObject Completed_txt;
-    public GameObject FinalScore;
+    public RecipeData CurrentRecipe { get; private set; }
 
-    public Score score;
-
-
-    bool Prod01 = true;
-    bool Prod02 = true;
-    bool Prod03 = true;
-
-    void Start()
+    // Inicializa la carta con los datos de una receta
+    public void Setup(RecipeData recipe)
     {
-        Prod01 = true;
-        Prod02 = true;
-        Prod03 = true;
-    }
+        CurrentRecipe = recipe;
+        if (completedTxt != null) completedTxt.SetActive(false);
 
-    void Update()
-    {
-        OrderCompleted();
-    }
-
-    public void TurnOffProduct01()
-    {
-        Product01.SetActive(false);
-        Prod01 = false;
-    }
-
-    public void TurnOffProduct02()
-    {
-        Product02.SetActive(false);
-        Prod02 = false;
-    }
-
-    public void TurnOffProduct03()
-    {
-        Product03.SetActive(false);
-        Prod03 = false;
-    }
-
-    void OrderCompleted()
-    {
-        if(!Prod01 && !Prod02 && !Prod03)
+        for (int i = 0; i < ingredientSlots.Length; i++)
         {
-            score.GetComponent<Score>().CalculateTotalPoints();
-
-            Completed_txt.SetActive(true);
-            Invoke("HideOrder", 3);
+            if (i < recipe.ingredientIcons.Count)
+            {
+                ingredientSlots[i].sprite = recipe.ingredientIcons[i];
+                ingredientSlots[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                ingredientSlots[i].gameObject.SetActive(false);
+            }
         }
     }
 
-    void HideOrder()
+    public void MarkAsCompleted()
     {
-        //fade de desaparecer y recorrer las otras ordenes
-        //Se quita que sea la current order
-        this.gameObject.SetActive(false);
+        if (completedTxt != null) completedTxt.SetActive(true);
     }
-
-
 }

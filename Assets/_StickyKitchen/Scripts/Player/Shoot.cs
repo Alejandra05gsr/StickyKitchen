@@ -42,8 +42,8 @@ public class Shoot : MonoBehaviour
 
 
     [Header("Shader Range Adjustments")]
-    [SerializeField] private float minFillValue = -1f; // Si 0 es la mitad, pon aquí el valor cuando está vacío (ej. -0.5 o -1)
-    [SerializeField] private float maxFillValue = 1f;  // El valor cuando está completamente lleno (ej. 0.5 o 1)
+    [SerializeField] private float minFillValue = -1f; 
+    [SerializeField] private float maxFillValue = 1f;  
 
 
     [Header("State")]
@@ -96,7 +96,21 @@ public class Shoot : MonoBehaviour
 
         if (CheckRaycast(out RaycastHit hit))
         {
-            GameObject prefabToInstantiate = (currentFluid == FluidType.Water) ? waterPrefab : syrupPrefab;
+            if (currentFluid == FluidType.Syrup && hit.collider.CompareTag("Interactuable"))
+            {
+                Debug.Log("Interactuando");
+            }
+            
+            GameObject prefabToInstantiate;
+
+            if (currentFluid == FluidType.Water)
+            {
+                prefabToInstantiate = waterPrefab;
+            }
+            else
+            {
+                prefabToInstantiate = syrupPrefab;
+            }
             CreateFluid(prefabToInstantiate, hit);
             ConsumeAmmo();
         }

@@ -13,6 +13,7 @@ TagManager:
   - WaterAmmo
   - SyrupAmmo
   - Bowl
+  - Interactuable
   layers:
   - Default
   - TransparentFX

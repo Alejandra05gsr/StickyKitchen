@@ -4,16 +4,10 @@ using UnityEngine;
 public class Timer : MonoBehaviour
 {
     [SerializeField]
-    public float totalMinutes = 3.0f;
-    float minutes = 0f;
+    public float time = 180.0f;
+    float remainingTime = 0f;
 
-    [SerializeField]
-    public float totalSeconds = 60;
-    float seconds = 0;
-
-   
-
-    private float currentTime;
+    public PlayerController player;
 
     public bool timerActive;
     public Score score;
@@ -22,8 +16,7 @@ public class Timer : MonoBehaviour
 
     void Start()
     {
-        seconds = totalSeconds;
-        UITime();
+        remainingTime = time;
         timerActive = true; //Al iniciar debe ser falso
     }
 
@@ -49,30 +42,29 @@ public class Timer : MonoBehaviour
     void FinishTimer()
     {
         timerActive = false;
-        score.GetComponent<Score>().ShowFinishScreen(); ;
+        score.GetComponent<Score>().ShowFinishScreen(); 
+        player.GetComponent<PlayerController>().enabled = false; 
     }
 
     void GameTimer()
     {
         if (!timerActive) return;
 
-        if(seconds >= 0)
+
+        if (remainingTime > 0)
         {
-            seconds -= Time.deltaTime;
-            timerText.text = ("0" + minutes + ":" + seconds);
+            remainingTime -= Time.deltaTime;
         }
-        else
+        else if (remainingTime < 0)
         {
-            seconds = 0;
+            remainingTime = 0;
             FinishTimer();
         }
 
-        
-    }
+        int minutes = Mathf.FloorToInt(remainingTime / 60f);
+        int seconds = Mathf.FloorToInt(remainingTime % 60f);
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
-    void UITime()
-    {
-        timerText.text = ("0" + minutes + ":" + seconds);
 
     }
 
