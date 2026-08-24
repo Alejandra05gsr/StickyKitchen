@@ -98,9 +98,16 @@ public class Shoot : MonoBehaviour
         {
             if (currentFluid == FluidType.Syrup && hit.collider.CompareTag("Interactuable"))
             {
-                Debug.Log("Interactuando");
+                hit.collider.gameObject.GetComponent<InteractableDoors>().InteractFurniture(); 
             }
-            
+
+            if (currentFluid == FluidType.Water && hit.collider.CompareTag("Syrup"))
+            {
+                //Desaparece el jarabe con el agua
+                hit.collider.gameObject.GetComponent<FluidArea>().DisapearFluid(); //Se golpea el nodo, no el area
+                Debug.Log("Desaparece Jarabe");
+            }
+
             GameObject prefabToInstantiate;
 
             if (currentFluid == FluidType.Water)

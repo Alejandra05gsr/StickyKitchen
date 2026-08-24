@@ -5,12 +5,27 @@ using UnityEngine.UI;
 public class Order : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Image[] ingredientSlots; // Arrastra aquí los 4 componentes Image del Prefab
+    [SerializeField] private Image[] ingredientSlots; 
     [SerializeField] private GameObject completedTxt;
 
     public RecipeData CurrentRecipe { get; private set; }
 
-    // Inicializa la carta con los datos de una receta
+    bool timerActive;
+    public float timerTime = 30;
+    public Slider slider;
+
+
+    void Update()
+    {
+        Timer();
+    }
+
+    void Start()
+    {
+        timerActive = true;
+    }
+
+
     public void Setup(RecipeData recipe)
     {
         CurrentRecipe = recipe;
@@ -33,5 +48,30 @@ public class Order : MonoBehaviour
     public void MarkAsCompleted()
     {
         if (completedTxt != null) completedTxt.SetActive(true);
+    }
+
+    void Timer()
+    {
+        if (!timerActive) return;
+
+        if (timerTime > 0)
+        {
+            //slider
+            timerTime -= Time.deltaTime;
+        }
+        else if (timerTime <= 0)
+        {
+            timerActive = false;
+            timerTime = 0;
+            CancelOrder();
+        }
+
+    }
+
+
+    void CancelOrder()
+    {
+        this.gameObject.SetActive(false);
+        Debug.Log("Orden Cancelada");
     }
 }

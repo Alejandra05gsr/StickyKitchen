@@ -90,6 +90,18 @@ public class FluidArea : MonoBehaviour
         }
     }
 
+
+    public void DisapearFluid()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+    void DisappearFluid()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+
 }
 
 
