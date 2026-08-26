@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class InteractableDoors : MonoBehaviour
 {
+    //Cajones
+    public bool isDrawer;
     public Vector3 initialPosition;
     public Vector3 finalPosition;
-    public Quaternion initialRotation;
-    public Quaternion finalRotation;
+
+    //Puertas
+    public bool isDoor;
+    public Vector3 initialRotation;
+    public Vector3 finalRotation;
+
 
 
     bool isOpen;
@@ -21,28 +27,61 @@ public class InteractableDoors : MonoBehaviour
 
     }
 
-
     public void InteractFurniture()
     {
-      //Que si esta en la pos inicial se cambie a la final y si está en la final se ponga en la inicial
-      if (!isOpen)
+
+        if (isDoor)
         {
-            //Pone su rotación inicial como el inicio
-           // this.transform.position = finalPosition;
-            transform.Rotate(90, 0, 0);
+            //Esta pos inicial y final
+            initialPosition = this.transform.position;
+            finalPosition = this.transform.position;
+            InteractDoor();
+        }
+        else if (isDrawer)
+        {
+            //Esta rot inicial y final
+            //initialRotation = this.transform.rotation;
+            //finalRotation = this.transform.rotation;
+            InteractDrawer();
+        }
+
+    }
+
+
+
+
+    void InteractDoor() //Rotación
+    {
+        if (!isOpen)
+        {
+            transform.Rotate(finalRotation);
             Debug.Log("Open");
             isOpen = true;
         }
-      else if (isOpen)
+        else if (isOpen)
         {
-            //this .gameObject.transform.rotation;
-            //this.transform.position = initialPosition;
-            transform.Rotate(-90, 0, 0);
+            transform.Rotate(initialRotation);
             Debug.Log("Close");
             isOpen = false;
         }
     }
 
 
+    void InteractDrawer() //Posición
+    {
+        if (!isOpen)
+        {
+            transform.position = finalPosition;
+            Debug.Log("Open");
+            isOpen = true;
+        }
+        else if (isOpen)
+        {
+            transform.position = initialPosition;
+            Debug.Log("Close");
+            isOpen = false;
+        }
+
+    }
 
 }
