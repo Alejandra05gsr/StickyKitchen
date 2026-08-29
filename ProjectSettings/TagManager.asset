@@ -8,7 +8,6 @@ TagManager:
   - Eggs
   - Butter
   - Chocolate
-  - Milk
   - Sugar
   - WaterAmmo
   - SyrupAmmo
@@ -16,6 +15,8 @@ TagManager:
   - Interactuable
   - Syrup
   - Water
+  - Coffee
+  - Honey
   layers:
   - Default
   - TransparentFX

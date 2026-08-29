@@ -20,10 +20,7 @@ public class OrderManager : MonoBehaviour
 
     void Start()
     {
-        // 1. Crear el primer pedido preestablecido
         SpawnOrder(initialRecipe);
-
-        // 2. Iniciar la rutina de spawn automático
         StartCoroutine(SpawnRoutine());
     }
 
@@ -43,34 +40,45 @@ public class OrderManager : MonoBehaviour
 
     void SpawnOrder(RecipeData recipe)
     {
-        // Instancia la nueva comanda
         GameObject newOrderGO = Instantiate(orderPrefab, ordersParent);
         Order order = newOrderGO.GetComponent<Order>();
-        order.Setup(recipe);
+        order.Setup(recipe, this); // Pasamos la referencia de este manager
 
-        // Si quieres que aparezcan a la DERECHA, se añaden al final de la lista UI
         activeOrders.Add(order);
     }
 
-    // Llama a esto cuando el jugador prepare con éxito el pedido actual
+    // Devuelve la orden activa en la primera posición de la cola
+    public Order GetCurrentOrder()
+    {
+        return activeOrders.Count > 0 ? activeOrders[0] : null;
+    }
+
     public void CompleteCurrentOrder()
     {
         if (activeOrders.Count == 0) return;
 
-        // Según tu lógica, el pedido de la extrema derecha (o el primero) se completa
-        Order targetOrder = activeOrders[activeOrders.Count - 1]; // Extrema derecha
+        Order targetOrder = activeOrders[0];
         targetOrder.MarkAsCompleted();
-
         StartCoroutine(RemoveOrderRoutine(targetOrder));
+    }
+
+    public void RemoveOrder(Order order)
+    {
+        StartCoroutine(RemoveOrderRoutine(order));
     }
 
     IEnumerator RemoveOrderRoutine(Order order)
     {
-        yield return new WaitForSeconds(1.5f); // Tiempo de espera visual
+        if (activeOrders.Contains(order))
+        {
+            activeOrders.Remove(order);
+        }
 
-        activeOrders.Remove(order);
-        Destroy(order.gameObject);
-        // Al destruir el GameObject, el 'Horizontal Layout Group' 
-        // acomoda y recorre automáticamente todas las demás cartas.
+        yield return new WaitForSeconds(1.0f);
+
+        if (order != null)
+        {
+            Destroy(order.gameObject);
+        }
     }
 }

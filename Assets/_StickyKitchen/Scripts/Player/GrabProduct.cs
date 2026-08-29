@@ -4,7 +4,6 @@ using UnityEngine;
 public class GrabProduct : MonoBehaviour
 {
     public Transform playerGrabTransform;
-
     public GameObject productGrabbed;
     private GameObject nearbyProduct;
 
@@ -14,17 +13,10 @@ public class GrabProduct : MonoBehaviour
     private int idGrabbedProduct;
     private int productPoints;
 
-    public GameObject order;
-
+    [Header("Referencias del Sistema")]
+    public OrderManager orderManager; // Referencia al OrderManager de la escena
     public Score score;
 
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -32,17 +24,13 @@ public class GrabProduct : MonoBehaviour
             if (productGrabbed == null && nearbyProduct != null)
             {
                 Grab(nearbyProduct);
-                grabText.gameObject.SetActive(false);
-                dropText.gameObject.SetActive(true);
             }
             else if (productGrabbed != null)
             {
                 Drop();
-                dropText.gameObject.SetActive(false);
             }
         }
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -62,7 +50,6 @@ public class GrabProduct : MonoBehaviour
         }
     }
 
-
     private void Grab(GameObject targetProduct)
     {
         productGrabbed = targetProduct;
@@ -74,19 +61,11 @@ public class GrabProduct : MonoBehaviour
             productPoints = prodScript.points;
         }
 
-
         Rigidbody rb = productGrabbed.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-        }
+        if (rb != null) rb.isKinematic = true;
 
         Collider[] colliders = productGrabbed.GetComponentsInChildren<Collider>();
-        foreach (Collider col in colliders)
-        {
-            col.enabled = false;
-        }
-
+        foreach (Collider col in colliders) col.enabled = false;
 
         productGrabbed.transform.position = playerGrabTransform.position;
         productGrabbed.transform.rotation = playerGrabTransform.rotation;
@@ -98,7 +77,6 @@ public class GrabProduct : MonoBehaviour
         nearbyProduct = null;
     }
 
-
     public void Drop()
     {
         if (productGrabbed == null) return;
@@ -106,16 +84,10 @@ public class GrabProduct : MonoBehaviour
         productGrabbed.transform.SetParent(null);
 
         Collider[] colliders = productGrabbed.GetComponentsInChildren<Collider>();
-        foreach (Collider col in colliders)
-        {
-            col.enabled = true;
-        }
+        foreach (Collider col in colliders) col.enabled = true;
 
         Rigidbody rb = productGrabbed.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-        }
+        if (rb != null) rb.isKinematic = false;
 
         productGrabbed = null;
         if (dropText != null) dropText.gameObject.SetActive(false);
@@ -132,40 +104,25 @@ public class GrabProduct : MonoBehaviour
     public void DeliverProduct()
     {
         if (productGrabbed == null) return;
-        
-        productGrabbed.GetComponent<Product>().TypeOfProduct(idGrabbedProduct, productPoints);
-        Debug.Log("Producto entregado: " + productGrabbed.name + " con ID: " + idGrabbedProduct + ", Puntos: " + productPoints);
 
-        ////Visualización de interfaz de pedidos
-        //switch (idGrabbedProduct)
-        //{
-        //    case 0:
-        //        order.gameObject.GetComponent<Order>().TurnOffProduct01();
-        //        break;
-        //    case 1:
-        //        order.gameObject.GetComponent<Order>().TurnOffProduct02();
-        //        break;
-        //    case 2:
-        //        order.gameObject.GetComponent<Order>().TurnOffProduct03();
-        //        break;
-        //}
+        // Obtenemos la orden activa actual
+        Order currentOrder = orderManager.GetCurrentOrder();
 
-        
-        //Se llama a la función de Score para ir sumando los puntos
-        score.GetComponent<Score>().AddPoints(productPoints);
-
-
-        //Se quita el objeto del jugador
-        Rigidbody rb = productGrabbed.GetComponent<Rigidbody>();
-        if (rb != null)
+        if (currentOrder != null)
         {
-            rb.isKinematic = true;
+            // Intentamos entregar el ingrediente a la orden actual
+            bool wasNeeded = currentOrder.TryDeliverIngredient(idGrabbedProduct);
+
+            if (wasNeeded)
+            {
+                if (score != null) score.AddPoints(productPoints);
+            }
         }
 
-        productGrabbed.transform.SetParent(null);
-        productGrabbed.SetActive(false);
+        // Destruimos o deshabilitamos el objeto entregado
+        Destroy(productGrabbed);
         productGrabbed = null;
-        dropText.gameObject.SetActive(false);
-    }
 
+        if (dropText != null) dropText.gameObject.SetActive(false);
+    }
 }

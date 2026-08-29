@@ -1,21 +1,13 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Product : MonoBehaviour
 {
     public int idProduct;
     public int points;
-    int currentProd;
-    int currentPoints;
 
     void Start()
     {
         CheckTypeOfProduct();
-    }
-
-    void Update()
-    {
-
     }
 
     void CheckTypeOfProduct()
@@ -34,11 +26,11 @@ public class Product : MonoBehaviour
                 idProduct = 2;
                 points = 3;
                 break;
-            case "Chocolate":
+            case "Honey":
                 idProduct = 3;
                 points = 8;
                 break;
-            case "Milk":
+            case "Chocolate":
                 idProduct = 4;
                 points = 5;
                 break;
@@ -51,14 +43,5 @@ public class Product : MonoBehaviour
                 points = 10;
                 break;
         }
-        //Debug.Log("Type: " + idProduct);
-        TypeOfProduct(currentProd, currentPoints);
     }
-
-    public void TypeOfProduct(int idCurrentProduct, int currentPoints)
-    {
-        idCurrentProduct = idProduct;
-        currentPoints = points;
-    }
-
 }
