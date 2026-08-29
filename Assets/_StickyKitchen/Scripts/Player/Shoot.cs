@@ -1,38 +1,33 @@
-using NUnit.Framework.Constraints;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.Image;
 
 public class Shoot : MonoBehaviour
 {
     public enum FluidType { Water, Syrup }
-
 
     [Header("Raycast Settings")]
     [SerializeField] private float raycastDistance = 20f;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private Transform gunTransform;
     [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform bulletSpawnPoint; // Punta del cañón de la pistola
 
+    [Header("Projectile Prefabs (Balas Voladoras)")]
+    [SerializeField] private GameObject waterProjectilePrefab; // Esfera de agua voladora
+    [SerializeField] private GameObject syrupProjectilePrefab; // Esfera de jarabe voladora
 
-
-    [Header("Fluid Prefabs")]
-    [SerializeField] private GameObject waterPrefab;
-    [SerializeField] private GameObject syrupPrefab;
+    [Header("Fluid Mesh Prefabs (Mallas/Charcos)")]
+    [SerializeField] private GameObject waterPrefab; // Malla/Charco de agua
+    [SerializeField] private GameObject syrupPrefab; // Malla/Charco de jarabe
     [SerializeField] private GameObject waterShader;
     [SerializeField] private GameObject syrupShader;
-
-
 
     [Header("Water Ammo")]
     private int currentWaterAmmo;
     [SerializeField] private int maxWaterAmmo = 10;
     private float currentWaterShader;
     [SerializeField] public float maxWaterShader = 1f;
-  
-
-
 
     [Header("Syrup Ammo")]
     private int currentSyrupAmmo;
@@ -40,33 +35,22 @@ public class Shoot : MonoBehaviour
     private float currentSyrupShader;
     [SerializeField] public float maxSyrupShader = 1f;
 
-
     [Header("Shader Range Adjustments")]
-    [SerializeField] private float minFillValue = -1f; 
-    [SerializeField] private float maxFillValue = 1f;  
-
+    [SerializeField] private float minFillValue = -1f;
+    [SerializeField] private float maxFillValue = 1f;
 
     [Header("State")]
     [SerializeField] private FluidType currentFluid = FluidType.Water;
 
-
-
-    // Propiedades públicas útiles para UI o scripts externos
-
+    // Propiedades públicas para UI u otros componentes
     public int CurrentWaterAmmo => currentWaterAmmo;
-
     public int CurrentSyrupAmmo => currentSyrupAmmo;
-
     public FluidType CurrentFluid => currentFluid;
-
-
-
 
     private void Start()
     {
         ReloadAllAmmo();
     }
-
 
     private void Update()
     {
@@ -87,7 +71,7 @@ public class Shoot : MonoBehaviour
     }
 
     private void TryShoot()
-    {  
+    {
         if (!HasAmmoForCurrentFluid())
         {
             Debug.Log("Sin munición para " + currentFluid);
@@ -96,67 +80,78 @@ public class Shoot : MonoBehaviour
 
         if (CheckRaycast(out RaycastHit hit))
         {
+            // Interacciones directas por Raycast
             if (currentFluid == FluidType.Syrup && hit.collider.CompareTag("Interactuable"))
             {
-                hit.collider.gameObject.GetComponent<InteractableDoors>().InteractFurniture(); 
+                hit.collider.gameObject.GetComponent<InteractableDoors>()?.InteractFurniture();
             }
 
             if (currentFluid == FluidType.Water && hit.collider.CompareTag("Syrup"))
             {
-                //Desaparece el jarabe con el agua
-                hit.collider.gameObject.GetComponent<FluidArea>().DisapearFluid(); //Se golpea el nodo, no el area
+                hit.collider.gameObject.GetComponent<FluidArea>()?.DisapearFluid();
                 Debug.Log("Desaparece Jarabe");
             }
 
-            GameObject prefabToInstantiate;
+            // Seleccionar prefabs según el tipo de fluido cargado
+            GameObject projectileToInstantiate;
+            GameObject meshToInstantiate;
 
             if (currentFluid == FluidType.Water)
             {
-                prefabToInstantiate = waterPrefab;
+                projectileToInstantiate = waterProjectilePrefab != null ? waterProjectilePrefab : waterPrefab;
+                meshToInstantiate = waterPrefab;
             }
             else
             {
-                prefabToInstantiate = syrupPrefab;
+                projectileToInstantiate = syrupProjectilePrefab != null ? syrupProjectilePrefab : syrupPrefab;
+                meshToInstantiate = syrupPrefab;
             }
-            CreateFluid(prefabToInstantiate, hit);
+
+            CreateFluid(projectileToInstantiate, meshToInstantiate, hit);
             ConsumeAmmo();
         }
     }
 
     private bool CheckRaycast(out RaycastHit hit)
     {
-        Vector3 origin = gunTransform != null ? gunTransform.position : transform.position;
-        Vector3 direction = cameraTransform != null ? cameraTransform.forward : transform.forward;
+        Ray ray = Camera.main != null ?
+            Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)) :
+            new Ray(cameraTransform != null ? cameraTransform.position : transform.position,
+                    cameraTransform != null ? cameraTransform.forward : transform.forward);
 
-        bool hasHit = Physics.Raycast(origin, direction, out hit, raycastDistance, layerMask);
+        int playerLayer = LayerMask.NameToLayer("Player");
+        LayerMask finalMask = layerMask & ~(1 << playerLayer);
+
+        bool hasHit = Physics.Raycast(ray, out hit, raycastDistance, finalMask);
 
         if (hasHit)
         {
-            Debug.DrawLine(origin, hit.point, Color.green, 2f);
+            Debug.DrawLine(ray.origin, hit.point, Color.green, 2f);
         }
         else
         {
-            Debug.DrawLine(origin, origin + direction * raycastDistance, Color.red, 0.5f);
+            Debug.DrawLine(ray.origin, ray.origin + ray.direction * raycastDistance, Color.red, 0.5f);
         }
 
         return hasHit;
     }
 
-    private void CreateFluid(GameObject prefab, RaycastHit hit)
+    private void CreateFluid(GameObject projectilePrefab, GameObject meshPrefab, RaycastHit hit)
     {
-        if (prefab == null) return;
+        if (projectilePrefab == null) return;
 
-        Vector3 spawnPosition = hit.point + hit.normal * 0.02f;
-        Vector3 forward = Vector3.ProjectOnPlane(gunTransform != null ? gunTransform.forward : transform.forward, hit.normal).normalized;
+        Vector3 spawnPosition = bulletSpawnPoint != null ? bulletSpawnPoint.position :
+                               (gunTransform != null ? gunTransform.position : transform.position);
 
-        if (forward == Vector3.zero)
+        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript == null)
         {
-            forward = Vector3.Cross(hit.normal, Vector3.up);
+            projectileScript = projectile.AddComponent<Projectile>();
         }
 
-
-        Quaternion rotation = Quaternion.LookRotation(forward, hit.normal);
-        Instantiate(prefab, spawnPosition, rotation);
+        projectileScript.SetupProjectile(hit.point, hit.normal, gunTransform, meshPrefab, currentFluid);
     }
 
     private bool HasAmmoForCurrentFluid()
@@ -164,9 +159,7 @@ public class Shoot : MonoBehaviour
         return currentFluid switch
         {
             FluidType.Water => currentWaterAmmo > 0,
-
             FluidType.Syrup => currentSyrupAmmo > 0,
-
             _ => false
         };
     }
@@ -176,9 +169,7 @@ public class Shoot : MonoBehaviour
         if (currentFluid == FluidType.Water)
         {
             currentWaterAmmo -= 1;
-            // Calculamos el porcentaje (0.0 a 1.0)
             float pct = (float)currentWaterAmmo / maxWaterAmmo;
-            // Lo mapeamos al rango real del shader (minFillValue a maxFillValue)
             currentWaterShader = Mathf.Lerp(minFillValue, maxFillValue, pct);
         }
         else if (currentFluid == FluidType.Syrup)
@@ -191,26 +182,22 @@ public class Shoot : MonoBehaviour
         UpdateShaders();
     }
 
-
     public void ToggleFluidType()
     {
         currentFluid = (currentFluid == FluidType.Water) ? FluidType.Syrup : FluidType.Water;
         Debug.Log("Fluido cambiado a: " + currentFluid);
     }
 
-
     public void ReloadAllAmmo()
     {
         currentWaterAmmo = maxWaterAmmo;
         currentSyrupAmmo = maxSyrupAmmo;
 
-        // Al recargar, asignamos el valor máximo del shader
         currentWaterShader = maxFillValue;
         currentSyrupShader = maxFillValue;
 
         UpdateShaders();
     }
-
 
     public void OnTriggerEnter(Collider other)
     {
@@ -228,14 +215,9 @@ public class Shoot : MonoBehaviour
         }
     }
 
-
     void UpdateShaders()
     {
-        waterShader.GetComponent<Renderer>().material.SetFloat("_Fill", currentWaterShader);
-        syrupShader.GetComponent<Renderer>().material.SetFloat("_Fill", currentSyrupShader);
+        if (waterShader != null) waterShader.GetComponent<Renderer>().material.SetFloat("_Fill", currentWaterShader);
+        if (syrupShader != null) syrupShader.GetComponent<Renderer>().material.SetFloat("_Fill", currentSyrupShader);
     }
-
 }
-
-
-

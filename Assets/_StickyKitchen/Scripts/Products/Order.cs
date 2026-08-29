@@ -18,6 +18,7 @@ public class Order : MonoBehaviour
     // Lista para rastrear los IDs pendientes de entregar
     private List<int> pendingIngredientIDs = new List<int>();
     private OrderManager orderManager;
+    public Tray tray;
 
     public void Setup(RecipeData recipe, OrderManager manager)
     {
@@ -73,15 +74,24 @@ public class Order : MonoBehaviour
         {
             if (pendingIngredientIDs[i] == ingredientID)
             {
-                // Ocultamos la UI del ingrediente entregado
+                // Oculta la UI del ingrediente de inmediato
                 ingredientSlots[i].gameObject.SetActive(false);
-                pendingIngredientIDs[i] = -1; // Marcamos como entregado
+                pendingIngredientIDs[i] = -1; // Marcado como entregado
 
-                CheckCompletion();
                 return true;
             }
         }
         return false;
+    }
+
+    // Consulta si ya se entregaron todos los ingredientes sin completar la orden todavía
+    public bool IsCompleted()
+    {
+        foreach (int id in pendingIngredientIDs)
+        {
+            if (id != -1) return false;
+        }
+        return true;
     }
 
     private void CheckCompletion()
@@ -106,6 +116,15 @@ public class Order : MonoBehaviour
         }
     }
 
+    public void CompleteOrderSequence()
+    {
+        MarkAsCompleted();
+        if (orderManager != null)
+        {
+            orderManager.CompleteCurrentOrder();
+        }
+    }
+
     public void MarkAsCompleted()
     {
         if (completedTxt != null) completedTxt.SetActive(true);
@@ -119,6 +138,7 @@ public class Order : MonoBehaviour
         }
         else
         {
+            tray.DeactivateAllFoodItems();
             Destroy(this.gameObject);
         }
     }

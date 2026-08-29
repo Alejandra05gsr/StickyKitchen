@@ -16,6 +16,8 @@ public class GrabProduct : MonoBehaviour
     [Header("Referencias del Sistema")]
     public OrderManager orderManager; // Referencia al OrderManager de la escena
     public Score score;
+    public Tray tray;
+    public InteractableDoors ovenDoor;
 
     void Update()
     {
@@ -105,21 +107,29 @@ public class GrabProduct : MonoBehaviour
     {
         if (productGrabbed == null) return;
 
-        // Obtenemos la orden activa actual
-        Order currentOrder = orderManager.GetCurrentOrder();
+        Order currentOrder = orderManager != null ? orderManager.GetCurrentOrder() : null;
 
         if (currentOrder != null)
         {
-            // Intentamos entregar el ingrediente a la orden actual
+            // Oculta el ingrediente de la UI al momento
             bool wasNeeded = currentOrder.TryDeliverIngredient(idGrabbedProduct);
 
             if (wasNeeded)
             {
-                if (score != null) score.AddPoints(productPoints);
+                // Prende el objeto en la bandeja del horno
+                if (tray != null)
+                {
+                    tray.ActivateFoodItem(idGrabbedProduct);
+                }
+
+                // Guarda los puntos acumulados en la puerta del horno
+                if (ovenDoor != null)
+                {
+                    ovenDoor.AccumulatePoints(productPoints);
+                }
             }
         }
 
-        // Destruimos o deshabilitamos el objeto entregado
         Destroy(productGrabbed);
         productGrabbed = null;
 

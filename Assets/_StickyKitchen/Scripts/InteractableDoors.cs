@@ -2,86 +2,139 @@ using UnityEngine;
 
 public class InteractableDoors : MonoBehaviour
 {
-    //Cajones
+    // Cajones / Horno
     public bool isDrawer;
+    public bool isOven;
     public Vector3 initialPosition;
     public Vector3 finalPosition;
 
-    //Puertas
+    // Puertas
     public bool isDoor;
     public Vector3 initialRotation;
     public Vector3 finalRotation;
 
+    [Header("Referencias del Horno")]
+    public Tray ovenTray;
+    public OrderManager orderManager;
+    public Score score;
 
-
-    bool isOpen;
-
+    private bool isOpen = false;
+    private bool hasBaked = false;
+    private float pendingPoints = 0f;
 
     void Start()
     {
         isOpen = false;
     }
 
-    void Update()
-    {
-
-    }
-
     public void InteractFurniture()
     {
-
         if (isDoor)
         {
-            //Esta pos inicial y final
             initialPosition = this.transform.position;
             finalPosition = this.transform.position;
             InteractDoor();
         }
         else if (isDrawer)
         {
-            //Esta rot inicial y final
-            //initialRotation = this.transform.rotation;
-            //finalRotation = this.transform.rotation;
             InteractDrawer();
         }
-
+        else if (isOven)
+        {
+            InteractOven();
+        }
     }
 
-
-
-
-    void InteractDoor() //Rotación
+    void InteractDoor()
     {
         if (!isOpen)
         {
             transform.Rotate(finalRotation);
-            Debug.Log("Open");
             isOpen = true;
+
+            if (isOven) CleanOven();
         }
-        else if (isOpen)
+        else
         {
             transform.Rotate(initialRotation);
-            Debug.Log("Close");
             isOpen = false;
+
+            if (isOven) MakeFood();
         }
     }
 
-
-    void InteractDrawer() //Posición
+    void InteractDrawer()
     {
         if (!isOpen)
         {
             transform.position = finalPosition;
-            Debug.Log("Open");
             isOpen = true;
+
+            if (isOven) CleanOven();
         }
-        else if (isOpen)
+        else
         {
             transform.position = initialPosition;
-            Debug.Log("Close");
             isOpen = false;
-        }
 
+            if (isOven) MakeFood();
+        }
     }
 
+    void InteractOven()
+    {
+        if (!isOpen)
+        {
+            transform.Rotate(finalRotation);
+            isOpen = true;
+            CleanOven();
+        }
+        else
+        {
+            transform.Rotate(initialRotation);
+            isOpen = false;
+            MakeFood();
+        }
+    }
+
+    public void AccumulatePoints(float points)
+    {
+        pendingPoints += points;
+    }
+
+    void MakeFood()
+    {
+        // Se ejecuta únicamente al CERRAR el horno
+        if (orderManager == null) return;
+
+        Order currentOrder = orderManager.GetCurrentOrder();
+
+        if (currentOrder != null && currentOrder.IsCompleted())
+        {
+            // Suma los puntos a Score
+            if (score != null)
+            {
+                score.AddPoints(pendingPoints);
+            }
+
+            // Marca la orden como finalizada y pasa a la siguiente
+            currentOrder.CompleteOrderSequence();
+
+            pendingPoints = 0f;
+            hasBaked = true;
+        }
+    }
+
+    void CleanOven()
+    {
+        // Al volver a abrir el horno tras hornear, apaga los prefabs
+        if (hasBaked)
+        {
+            if (ovenTray != null)
+            {
+                ovenTray.DeactivateAllFoodItems();
+            }
+            hasBaked = false;
+        }
+    }
 }

@@ -1,107 +1,76 @@
+using System.Collections;
 using UnityEngine;
 
 public class FluidArea : MonoBehaviour
 {
-    [Header("Configuración de la Malla Cuadrada")]
-    public GameObject cylinderPrefab; 
-    public int gridSize = 5;          
-    public float spacing = 0.5f;
+    [System.Serializable]
+    public enum FluidAreaType { Water, Syrup }
 
-    [Header("WaterColors")]
-    public Color strongBlue = Color.blue;                      
-    public Color lightBlue = new Color(0.6f, 0.8f, 1f);
-    public bool isWaterFluid;
+    [Header("Tipo de Fluido")]
+    public FluidAreaType areaType = FluidAreaType.Water;
 
-    [Header("OrangeColors")]
-    public Color strongOrange = Color.orange;                      
-    public Color lightOrange = new Color(1f, 0.6f, 0.2f);
-    public bool isSyrupFluid;
-    
-    
-   
+    [Header("Desaparición del Agua")]
+    [SerializeField] private float waterDuration = 4f;    // Tiempo que dura el agua estática
+    [SerializeField] private float fadeOutDuration = 2f; // Tiempo que tarda en secarse/desaparecer
 
-    void Start()
+    private Renderer fluidRenderer;
+    private Material fluidMaterial;
+
+    private void Awake()
     {
-        GenerateAndColorGrid();
-    }
-
-
-    void GenerateAndColorGrid()
-    {
-        GameObject[] allNodes = new GameObject[gridSize * gridSize];
-        int index = 0;
-        float halfSize = (gridSize - 1) * spacing / 2f;
-
-        for (int x = 0; x < gridSize; x++)
+        fluidRenderer = GetComponent<Renderer>();
+        if (fluidRenderer != null)
         {
-            for (int z = 0; z < gridSize; z++)
-            {
-
-                Vector3 localPos = new Vector3((x * spacing) - halfSize, 0f, (z * spacing) - halfSize);
-                GameObject node = Instantiate(cylinderPrefab, transform);
-                node.transform.localPosition = localPos;
-
-                allNodes[index] = node;
-                index++;
-            }
-        }
-
-        float lowestY = float.MaxValue;
-        float highestY = float.MinValue;
-
-        foreach (GameObject node in allNodes)
-        {
-            float currentY = node.transform.position.y;
-            if (currentY < lowestY) lowestY = currentY;
-            if (currentY > highestY) highestY = currentY;
-        }
-
-        float heightDifference = highestY - lowestY;
-
-        foreach (GameObject node in allNodes)
-        {
-            float currentY = node.transform.position.y;
-
-            float floorCloseness = 1f; 
-
-            if (heightDifference > 0.001f)
-            {
-                floorCloseness = 1f - ((currentY - lowestY) / heightDifference);
-            }
-
-            float nodeValue = floorCloseness * 100f;
-
-            if (isWaterFluid)
-            {
-                Renderer render = node.GetComponent<Renderer>();
-                if (render != null)
-                {
-                    render.material.color = Color.Lerp(lightBlue, strongBlue, floorCloseness);
-                }
-            }
-            else if (isSyrupFluid)
-            {
-                Renderer render = node.GetComponent<Renderer>();
-                if (render != null)
-                {
-                    render.material.color = Color.Lerp(lightOrange, strongOrange, floorCloseness);
-                }
-            }
+            fluidMaterial = fluidRenderer.material;
         }
     }
 
+    private void Start()
+    {
+        // El agua se autodestruye con el tiempo; el jarabe NO (permanece infinito)
+        if (areaType == FluidAreaType.Water)
+        {
+            StartCoroutine(DisappearWaterRoutine());
+        }
+    }
 
+    /// <summary>
+    /// Destruye el objeto inmediatamente (usado por la limpieza de Agua sobre Jarabe)
+    /// </summary>
     public void DisapearFluid()
     {
-        this.gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
-    void DisappearFluid()
+    /// <summary>
+    /// Transición de desaparición progresiva para el agua
+    /// </summary>
+    private IEnumerator DisappearWaterRoutine()
     {
-        this.gameObject.SetActive(false);
+        yield return new WaitForSeconds(waterDuration);
+
+        float timer = 0f;
+        bool hasFillProperty = fluidMaterial != null && fluidMaterial.HasProperty("_Fill");
+        float startFill = hasFillProperty ? fluidMaterial.GetFloat("_Fill") : 1f;
+
+        while (timer < fadeOutDuration)
+        {
+            timer += Time.deltaTime;
+            float progress = timer / fadeOutDuration;
+
+            if (hasFillProperty)
+            {
+                float currentFill = Mathf.Lerp(startFill, -1f, progress);
+                fluidMaterial.SetFloat("_Fill", currentFill);
+            }
+            else
+            {
+                transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, progress);
+            }
+
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
-
-
 }
-
-
