@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a6fe0373193304f8d5c8b80f4d5898, type: 3}
   m_Name: ChocolateChipCookies
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
-  recipeName: Chocolate Chip Cookies
+  recipeName: Choco Cookies
   finalProductSprite: {fileID: 21300000, guid: 97580545397fd944ea382e6a5b40f23a, type: 3}
   ingredientIcons:
-  - {fileID: 21300000, guid: 57787298b62153949a3d465cc3368f6a, type: 3}
-  - {fileID: 21300000, guid: de74a8b64e8768743ab757a1490d8f9b, type: 3}
-  - {fileID: 21300000, guid: 58feff9da9f5c304abe703c1e39c63f7, type: 3}
+  - {fileID: 21300000, guid: fc761dccf8c11a641a1f5f54ffb707a8, type: 3}
+  - {fileID: 21300000, guid: c78895f578ada0c4a8f1fb8109bca205, type: 3}
+  - {fileID: 21300000, guid: d7ef514f246d9244688aaac0eaf65231, type: 3}
   - {fileID: 21300000, guid: f495ae8ecc0594f4f9f375ba8fc771a3, type: 3}
   ingredientIDs: 00000000010000000400000005000000

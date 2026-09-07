@@ -18,6 +18,9 @@ public class OrderManager : MonoBehaviour
 
     private List<Order> activeOrders = new List<Order>();
 
+    public InteractableDoors iDoors;
+    public bool orderCompleted = false;
+
     void Start()
     {
         SpawnOrder(initialRecipe);
@@ -55,11 +58,20 @@ public class OrderManager : MonoBehaviour
 
     public void CompleteCurrentOrder()
     {
-        if (activeOrders.Count == 0) return;
+        if (activeOrders.Count == 0) //Si hay 0 activos entonces no falta completar
+        {
+            OrderCompleted();
+            return;
+        }
+        else
+        {
+            OrderNotCompleted();
+        }
 
         Order targetOrder = activeOrders[0];
         targetOrder.MarkAsCompleted();
         StartCoroutine(RemoveOrderRoutine(targetOrder));
+
     }
 
     public void RemoveOrder(Order order)
@@ -81,4 +93,28 @@ public class OrderManager : MonoBehaviour
             Destroy(order.gameObject);
         }
     }
+
+    public void OrderCompleted()
+    {
+        orderCompleted = true;
+    }
+
+    public void OrderNotCompleted()
+    {
+        orderCompleted = false;
+    }
+
+    public bool CompletedOrder()
+    {
+        if (!orderCompleted)
+        {
+            return false;
+        }
+        else 
+        {
+            return true;
+        }
+
+    }
+
 }

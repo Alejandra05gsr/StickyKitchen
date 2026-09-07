@@ -64,6 +64,13 @@ public class Score : MonoBehaviour
         UpdateUIPoints();
     }
 
+    public void RemovePoints(float removePoint)
+    {
+        orderPoints -= removePoint;
+        CalculateTotalPoints();
+        UpdateUIPoints();
+    }
+
 
     void CalculateStars() //Calculamos los puntos al finalizar el tiempo (timer)
     {

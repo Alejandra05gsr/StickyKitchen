@@ -17,6 +17,7 @@ TagManager:
   - Water
   - Coffee
   - Honey
+  - Oven
   layers:
   - Default
   - TransparentFX

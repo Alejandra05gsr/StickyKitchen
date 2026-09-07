@@ -20,6 +20,7 @@ public class Order : MonoBehaviour
     private OrderManager orderManager;
     public Tray tray;
 
+
     public void Setup(RecipeData recipe, OrderManager manager)
     {
         CurrentRecipe = recipe;
@@ -93,6 +94,18 @@ public class Order : MonoBehaviour
         }
         return true;
     }
+    public void OrderCompleted(bool orderCompleted)
+    {
+        if (IsCompleted())
+        {
+            orderCompleted = false;
+        }
+        else if (!IsCompleted())
+        {
+            orderCompleted = true;
+        }
+    }
+
 
     private void CheckCompletion()
     {

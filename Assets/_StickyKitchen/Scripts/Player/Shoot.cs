@@ -84,6 +84,12 @@ public class Shoot : MonoBehaviour
             if (currentFluid == FluidType.Syrup && hit.collider.CompareTag("Interactuable"))
             {
                 hit.collider.gameObject.GetComponent<InteractableDoors>()?.InteractFurniture();
+                hit.collider.gameObject.GetComponent<Oven>()?.InteractOven();
+            }
+
+            if (currentFluid == FluidType.Syrup && hit.collider.CompareTag("Oven"))
+            {
+                hit.collider.gameObject.GetComponent<Oven>()?.InteractOven();
             }
 
             if (currentFluid == FluidType.Water && hit.collider.CompareTag("Syrup"))

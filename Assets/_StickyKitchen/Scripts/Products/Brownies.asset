@@ -15,9 +15,9 @@ MonoBehaviour:
   recipeName: Brownies
   finalProductSprite: {fileID: 21300000, guid: 97e3b2d6ad36ef04b9296d5052e76521, type: 3}
   ingredientIcons:
-  - {fileID: 21300000, guid: 57787298b62153949a3d465cc3368f6a, type: 3}
-  - {fileID: 21300000, guid: d07dc7e3e5538bc44a3a6982d69a9ac7, type: 3}
-  - {fileID: 21300000, guid: de74a8b64e8768743ab757a1490d8f9b, type: 3}
-  - {fileID: 21300000, guid: 58feff9da9f5c304abe703c1e39c63f7, type: 3}
-  - {fileID: 21300000, guid: b4d0efea3daa1304781b7f9f206bb289, type: 3}
+  - {fileID: 21300000, guid: fc761dccf8c11a641a1f5f54ffb707a8, type: 3}
+  - {fileID: 21300000, guid: 77d33e2efea66d941a16362058404a5e, type: 3}
+  - {fileID: 21300000, guid: c78895f578ada0c4a8f1fb8109bca205, type: 3}
+  - {fileID: 21300000, guid: d7ef514f246d9244688aaac0eaf65231, type: 3}
+  - {fileID: 21300000, guid: 024936a057e9b3143bd7edce589452b2, type: 3}
   ingredientIDs: 0000000002000000030000000400000006000000

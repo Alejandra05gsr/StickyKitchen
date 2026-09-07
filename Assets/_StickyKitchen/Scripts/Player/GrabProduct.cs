@@ -17,7 +17,7 @@ public class GrabProduct : MonoBehaviour
     public OrderManager orderManager; // Referencia al OrderManager de la escena
     public Score score;
     public Tray tray;
-    public InteractableDoors ovenDoor;
+    public Oven ovenDoor;
 
     void Update()
     {
@@ -105,6 +105,7 @@ public class GrabProduct : MonoBehaviour
 
     public void DeliverProduct()
     {
+        Debug.Log("Deliver");
         if (productGrabbed == null) return;
 
         Order currentOrder = orderManager != null ? orderManager.GetCurrentOrder() : null;
@@ -120,12 +121,14 @@ public class GrabProduct : MonoBehaviour
                 if (tray != null)
                 {
                     tray.ActivateFoodItem(idGrabbedProduct);
+                    Debug.Log("Objeto prendido en bandeja");
                 }
 
                 // Guarda los puntos acumulados en la puerta del horno
                 if (ovenDoor != null)
                 {
                     ovenDoor.AccumulatePoints(productPoints);
+                    Debug.Log("Puntos sumados: " + productPoints);
                 }
             }
         }
