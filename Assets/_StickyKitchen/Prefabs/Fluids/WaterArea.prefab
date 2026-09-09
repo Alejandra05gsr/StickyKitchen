@@ -128,15 +128,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12d2d3c189031524aa2f6d475bd414d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FluidArea
-  cylinderPrefab: {fileID: 5023720622226517206, guid: 6d7cbbd95513eb643ba145cccf6c4f6e, type: 3}
-  gridSize: 5
-  spacing: 0.5
-  strongBlue: {r: 0, g: 0, b: 1, a: 1}
-  lightBlue: {r: 0.6, g: 0.8, b: 1, a: 1}
-  isWaterFluid: 1
-  strongOrange: {r: 1, g: 0.6470588, b: 0, a: 1}
-  lightOrange: {r: 0.990566, g: 0.85272783, b: 0.71488965, a: 1}
-  isSyrupFluid: 0
+  areaType: 0
+  waterDuration: 4
+  fadeOutDuration: 2
 --- !u!1001 &1693918996491533148
 PrefabInstance:
   m_ObjectHideFlags: 0

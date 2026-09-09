@@ -40,8 +40,6 @@ public class Oven : MonoBehaviour
 
     void CloseOven()
     {
-        
-
         //Checar si está bien el postre o no
         //MakeFood();
         if (orderCompleted)

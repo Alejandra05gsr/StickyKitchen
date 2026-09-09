@@ -7,7 +7,7 @@ public class Shoot : MonoBehaviour
     public enum FluidType { Water, Syrup }
 
     [Header("Raycast Settings")]
-    [SerializeField] private float raycastDistance = 20f;
+    [SerializeField] private float raycastDistance = 30f;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private Transform gunTransform;
     [SerializeField] private Transform cameraTransform;
@@ -95,7 +95,7 @@ public class Shoot : MonoBehaviour
             if (currentFluid == FluidType.Water && hit.collider.CompareTag("Syrup"))
             {
                 hit.collider.gameObject.GetComponent<FluidArea>()?.DisapearFluid();
-                Debug.Log("Desaparece Jarabe");
+                //Debug.Log("Desaparece Jarabe");
             }
 
             // Seleccionar prefabs según el tipo de fluido cargado
