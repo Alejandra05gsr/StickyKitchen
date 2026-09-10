@@ -1,10 +1,13 @@
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using System.Collections;
 
 public class Oven : MonoBehaviour
 {
     public Vector3 initialRotation;
     public Vector3 finalRotation;
+    public float rotationSpeed = 2f;
+    public GameObject rotationPoint;
 
     [Header("Referencias del Horno")]
     public Tray ovenTray;
@@ -12,11 +15,12 @@ public class Oven : MonoBehaviour
     public Score score;
 
     private bool hasBaked = false;
-
     private float pendingPoints = 0f;
 
     public bool orderCompleted = false;
     public float removedPoints = 5f;
+
+    private bool isMoving = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,9 +36,12 @@ public class Oven : MonoBehaviour
 
     public void InteractOven()
     {
+        if (isMoving) return;
+
         Debug.Log("Horno");
         OrderCompleted();//Checa si se completó la orden
-        transform.Rotate(initialRotation); //Cierra el horno
+
+        AnimateDoor(initialRotation);
         Invoke("CloseOven", 4.0f);
     }
 
@@ -56,9 +63,34 @@ public class Oven : MonoBehaviour
 
     public void OpenOven()
     {
-        transform.Rotate(finalRotation);
+        AnimateDoor(finalRotation);
     }
 
+
+    private void AnimateDoor(Vector3 targetEuler)
+    {
+        Quaternion targetRotation = Quaternion.Euler(targetEuler);
+        Transform targetTransform = (rotationPoint != null) ? rotationPoint.transform : transform;
+
+        StartCoroutine(RotateDoor(targetTransform, targetRotation));
+    }
+
+    IEnumerator RotateDoor(Transform objectToRotate, Quaternion target)
+    {
+        isMoving = true;
+        Quaternion startRotation = objectToRotate.localRotation;
+        float time = 0f;
+
+        while (time < 1f)
+        {
+            time += Time.deltaTime * rotationSpeed;
+            objectToRotate.localRotation = Quaternion.Slerp(startRotation, target, time);
+            yield return null;
+        }
+
+        objectToRotate.localRotation = target;
+        isMoving = false;
+    }
 
 
     public void AccumulatePoints(float points)
@@ -100,7 +132,10 @@ public class Oven : MonoBehaviour
         // Al volver a abrir el horno tras hornear, apaga los prefabs
         OpenOven();
         pendingPoints = 0f;
-        ovenTray.DeactivateAllFoodItems();
+        if (ovenTray != null)
+        {
+            ovenTray.DeactivateAllFoodItems();
+        }
         hasBaked = false;
     }
 

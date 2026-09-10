@@ -628,7 +628,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OrderTimer
   slider: {fileID: 4106447764247371925}
   order: {fileID: 5348333990679864327}
-  sliderTimer: 30
+  score: {fileID: 0}
+  sliderTimer: 35
+  removePoints: 3
   timerActive: 1
 --- !u!1 &5322702595399860997
 GameObject:

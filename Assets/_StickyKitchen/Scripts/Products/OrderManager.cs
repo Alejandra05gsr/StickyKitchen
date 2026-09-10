@@ -15,10 +15,11 @@ public class OrderManager : MonoBehaviour
     [Header("Tiempos")]
     [SerializeField] private float spawnInterval = 5f; // Tiempo entre nuevos pedidos
     [SerializeField] private int maxOrdersOnScreen = 5;
+    public Score scoreManager;
+    public float penaltyPoints = 5f;
 
     private List<Order> activeOrders = new List<Order>();
 
-    public InteractableDoors iDoors;
     public bool orderCompleted = false;
 
     void Start()
@@ -45,12 +46,12 @@ public class OrderManager : MonoBehaviour
     {
         GameObject newOrderGO = Instantiate(orderPrefab, ordersParent);
         Order order = newOrderGO.GetComponent<Order>();
-        order.Setup(recipe, this); // Pasamos la referencia de este manager
+        order.Setup(recipe, this); 
 
         activeOrders.Add(order);
     }
 
-    // Devuelve la orden activa en la primera posición de la cola
+
     public Order GetCurrentOrder()
     {
         return activeOrders.Count > 0 ? activeOrders[0] : null;
@@ -58,7 +59,7 @@ public class OrderManager : MonoBehaviour
 
     public void CompleteCurrentOrder()
     {
-        if (activeOrders.Count == 0) //Si hay 0 activos entonces no falta completar
+        if (activeOrders.Count == 0) 
         {
             OrderCompleted();
             return;
@@ -72,6 +73,17 @@ public class OrderManager : MonoBehaviour
         targetOrder.MarkAsCompleted();
         StartCoroutine(RemoveOrderRoutine(targetOrder));
 
+    }
+
+    public void CancelOrderWithPenalty(Order order)
+    {
+        if (scoreManager != null)
+        {
+            scoreManager.RemovePoints(penaltyPoints);
+            Debug.Log($"Receta cancelada. Se restaron {penaltyPoints} puntos.");
+        }
+
+        RemoveOrder(order);
     }
 
     public void RemoveOrder(Order order)
@@ -93,28 +105,7 @@ public class OrderManager : MonoBehaviour
             Destroy(order.gameObject);
         }
     }
-
-    public void OrderCompleted()
-    {
-        orderCompleted = true;
-    }
-
-    public void OrderNotCompleted()
-    {
-        orderCompleted = false;
-    }
-
-    public bool CompletedOrder()
-    {
-        if (!orderCompleted)
-        {
-            return false;
-        }
-        else 
-        {
-            return true;
-        }
-
-    }
-
+    public void OrderCompleted() => orderCompleted = true;
+    public void OrderNotCompleted() => orderCompleted = false;
+    public bool CompletedOrder() => orderCompleted;
 }

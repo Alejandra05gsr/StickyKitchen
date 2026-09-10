@@ -10,15 +10,17 @@ public class Projectile : MonoBehaviour
     private Transform gunTransform;
     private GameObject finalMeshPrefab;
     private Shoot.FluidType fluidType;
+    private Transform hitTransform;
     private bool initialized;
 
-    public void SetupProjectile(Vector3 target, Vector3 normal, Transform gun, GameObject meshPrefab, Shoot.FluidType type)
+    public void SetupProjectile(Vector3 target, Vector3 normal, Transform gun, GameObject meshPrefab, Shoot.FluidType type, Transform hitObjTransform = null)
     {
         targetPoint = target;
         hitNormal = normal;
         gunTransform = gun;
         finalMeshPrefab = meshPrefab;
         fluidType = type;
+        hitTransform = hitObjTransform;
         initialized = true;
 
         transform.LookAt(targetPoint);
@@ -39,7 +41,6 @@ public class Projectile : MonoBehaviour
 
     private void SpawnFinalMesh()
     {
-        // 1. Limpieza de Jarabe si el proyectil es de Agua
         if (fluidType == Shoot.FluidType.Water)
         {
             Collider[] hitColliders = Physics.OverlapSphere(targetPoint, 0.5f);
@@ -54,7 +55,6 @@ public class Projectile : MonoBehaviour
 
         if (finalMeshPrefab == null) return;
 
-        // 2. Posicionamiento de la malla sobre la superficie
         Vector3 spawnPosition = targetPoint + hitNormal * 0.02f;
         Vector3 forward = Vector3.ProjectOnPlane(gunTransform != null ? gunTransform.forward : transform.forward, hitNormal).normalized;
         if (forward == Vector3.zero)
@@ -63,6 +63,14 @@ public class Projectile : MonoBehaviour
         }
 
         Quaternion rotation = Quaternion.LookRotation(forward, hitNormal);
-        Instantiate(finalMeshPrefab, spawnPosition, rotation);
+
+        // Instanciamos y guardamos la referencia de la malla creada
+        GameObject spawnedFluid = Instantiate(finalMeshPrefab, spawnPosition, rotation);
+
+        // 3. Emparentamiento dinámico si golpea un objeto móvil o interactuable
+        if (hitTransform != null && (hitTransform.CompareTag("Interactuable") || hitTransform.CompareTag("Oven")))
+        {
+            spawnedFluid.transform.SetParent(hitTransform, true);
+        }
     }
 }

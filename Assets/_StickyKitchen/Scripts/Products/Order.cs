@@ -28,7 +28,6 @@ public class Order : MonoBehaviour
 
         if (completedTxt != null) completedTxt.SetActive(false);
 
-        // 1. Asignar Nombre e Imagen del Producto Final
         if (recipeNameText != null)
         {
             recipeNameText.text = recipe.recipeName;
@@ -43,11 +42,10 @@ public class Order : MonoBehaviour
             }
             else
             {
-                finalProductImage.gameObject.SetActive(false); // Ocultar si no hay sprite asignado
+                finalProductImage.gameObject.SetActive(false); 
             }
         }
 
-        // 2. Configurar Slots de Ingredientes
         pendingIngredientIDs.Clear();
 
         for (int i = 0; i < ingredientSlots.Length; i++)
@@ -75,9 +73,8 @@ public class Order : MonoBehaviour
         {
             if (pendingIngredientIDs[i] == ingredientID)
             {
-                // Oculta la UI del ingrediente de inmediato
                 ingredientSlots[i].gameObject.SetActive(false);
-                pendingIngredientIDs[i] = -1; // Marcado como entregado
+                pendingIngredientIDs[i] = -1; 
 
                 return true;
             }
@@ -85,7 +82,7 @@ public class Order : MonoBehaviour
         return false;
     }
 
-    // Consulta si ya se entregaron todos los ingredientes sin completar la orden todavía
+   
     public bool IsCompleted()
     {
         foreach (int id in pendingIngredientIDs)
@@ -94,41 +91,6 @@ public class Order : MonoBehaviour
         }
         return true;
     }
-    public void OrderCompleted(bool orderCompleted)
-    {
-        if (IsCompleted())
-        {
-            orderCompleted = false;
-        }
-        else if (!IsCompleted())
-        {
-            orderCompleted = true;
-        }
-    }
-
-
-    private void CheckCompletion()
-    {
-        bool allDone = true;
-        foreach (int id in pendingIngredientIDs)
-        {
-            if (id != -1)
-            {
-                allDone = false;
-                break;
-            }
-        }
-
-        if (allDone)
-        {
-            MarkAsCompleted();
-            if (orderManager != null)
-            {
-                orderManager.CompleteCurrentOrder();
-            }
-        }
-    }
-
     public void CompleteOrderSequence()
     {
         MarkAsCompleted();
@@ -143,15 +105,16 @@ public class Order : MonoBehaviour
         if (completedTxt != null) completedTxt.SetActive(true);
     }
 
+    // Al expirar o cancelar la orden, aplica la penalización a través del OrderManager
     public void CancelOrder()
     {
         if (orderManager != null)
         {
-            orderManager.RemoveOrder(this);
+            orderManager.CancelOrderWithPenalty(this);
         }
         else
         {
-            tray.DeactivateAllFoodItems();
+            if (tray != null) tray.DeactivateAllFoodItems();
             Destroy(this.gameObject);
         }
     }

@@ -7,11 +7,11 @@ public class Shoot : MonoBehaviour
     public enum FluidType { Water, Syrup }
 
     [Header("Raycast Settings")]
-    [SerializeField] private float raycastDistance = 30f;
+    [SerializeField] private float raycastDistance = 100f;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private Transform gunTransform;
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private Transform bulletSpawnPoint; // Punta del cañón de la pistola
+    [SerializeField] private Transform bulletSpawnPoint; 
 
     [Header("Projectile Prefabs (Balas Voladoras)")]
     [SerializeField] private GameObject waterProjectilePrefab; // Esfera de agua voladora
@@ -132,10 +132,31 @@ public class Shoot : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.green, 2f);
+
+            Color rayColor = Color.green;
+
+            if (hit.collider.CompareTag("Syrup"))
+            {
+                rayColor = new Color(0.6f, 0.3f, 0f); // Marrón / Naranja para Jarabe
+            }
+            else if (hit.collider.CompareTag("Water") || hit.collider.CompareTag("Agua"))
+            {
+                rayColor = Color.cyan; // Azul para Agua
+            }
+            else if (hit.collider.CompareTag("Interactuable") || hit.collider.CompareTag("Oven"))
+            {
+                rayColor = Color.yellow; // Amarillo para objetos interactuables
+            }
+
+            // Dibuja la línea desde la cámara/arma hasta el punto exacto de impacto
+            Debug.DrawLine(ray.origin, hit.point, rayColor, 1.5f);
+
+            // Opcional: Pinta una pequeña cruz roja en el punto exacto donde va a spawnear el charco
+            Debug.DrawRay(hit.point, hit.normal * 0.5f, Color.red, 1.5f);
         }
         else
         {
+            // Línea roja hasta la distancia máxima si no apunta a nada
             Debug.DrawLine(ray.origin, ray.origin + ray.direction * raycastDistance, Color.red, 0.5f);
         }
 
@@ -157,7 +178,8 @@ public class Shoot : MonoBehaviour
             projectileScript = projectile.AddComponent<Projectile>();
         }
 
-        projectileScript.SetupProjectile(hit.point, hit.normal, gunTransform, meshPrefab, currentFluid);
+        // Le pasamos hit.collider.transform como el objeto impactado
+        projectileScript.SetupProjectile(hit.point, hit.normal, gunTransform, meshPrefab, currentFluid, hit.collider.transform);
     }
 
     private bool HasAmmoForCurrentFluid()

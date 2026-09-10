@@ -3,7 +3,7 @@ using System.Collections;
 
 public class InteractableDoors : MonoBehaviour
 {
-    // Cajones / Horno
+    // Cajones 
     public bool isDrawer;
     public Vector3 initialPosition;
     public Vector3 finalPosition;
@@ -12,8 +12,12 @@ public class InteractableDoors : MonoBehaviour
     public bool isDoor;
     public Vector3 initialRotation;
     public Vector3 finalRotation;
+    public float rotationSpeed = 2f;
+
+    public GameObject rotationPoint;
 
     private bool isOpen = false;
+    private bool isMoving = false;
 
 
     void Start()
@@ -21,12 +25,12 @@ public class InteractableDoors : MonoBehaviour
         isOpen = false;
     }
 
-    public void InteractFurniture() //Checar para que tambien se llame el horno al disparar
+    public void InteractFurniture() 
     {
+        if (isMoving) return;
+
         if (isDoor)
         {
-            initialPosition = this.transform.position;
-            finalPosition = this.transform.position;
             InteractDoor();
         }
         else if (isDrawer)
@@ -37,19 +41,37 @@ public class InteractableDoors : MonoBehaviour
 
     void InteractDoor()
     {
-        if (!isOpen)
-        {
-            transform.Rotate(finalRotation);
-            isOpen = true;
+        isOpen = !isOpen;
 
-        }
-        else
-        {
-            transform.Rotate(initialRotation);
-            isOpen = false;
+        // Determinamos el ángulo destino
+        Vector3 targetEuler = isOpen ? finalRotation : initialRotation;
+        Quaternion targetRotation = Quaternion.Euler(targetEuler);
 
-        }
+        // Si asignaste un pivote/padre, rotamos ese objeto; si no, rotamos este objeto
+        Transform targetTransform = (rotationPoint != null) ? rotationPoint.transform : transform;
+
+        StartCoroutine(RotateDoor(targetTransform, targetRotation));
     }
+
+
+    IEnumerator RotateDoor(Transform objectToRotate, Quaternion target)
+    {
+        isMoving = true;
+        Quaternion startRotation = objectToRotate.localRotation;
+        float time = 0f;
+
+        while (time < 1f)
+        {
+            time += Time.deltaTime * rotationSpeed;
+            // Interpola suavemente la rotación del objeto padre/pivote
+            objectToRotate.localRotation = Quaternion.Slerp(startRotation, target, time);
+            yield return null;
+        }
+
+        objectToRotate.localRotation = target;
+        isMoving = false;
+    }
+
 
     void InteractDrawer()
     {
