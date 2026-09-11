@@ -14,9 +14,9 @@ public class PlayerController : MonoBehaviour
     public float syrupJumpMultiplier = 0.5f;
     public float waterSpeedMultiplier = 1.4f;
 
-    // Flags que activa FluidSurface.cs
-    [HideInInspector] public bool isSteppingOnSyrup;
-    [HideInInspector] public bool isSteppingOnWater;
+    [Header("States")]
+    public bool isSteppingOnSyrup;
+    public bool isSteppingOnWater;
 
     [Header("Jump & Double Jump")]
     public int maxJumps = 2;
@@ -69,7 +69,6 @@ public class PlayerController : MonoBehaviour
 
         Vector3 moveDir = (transform.forward * vertical + transform.right * horizontal).normalized;
 
-        // Calcular la velocidad según sobre qué colisión está parado
         float currentSpeed = baseMoveSpeed;
 
         if (isSteppingOnSyrup)
@@ -148,7 +147,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        // Reiniciar los saltos al colisionar con cualquier superficie que esté debajo de los pies
+        // Activa el estado si está tocando la colisión del Syrup
+        if (collision.gameObject.CompareTag("Syrup"))
+        {
+            baseMoveSpeed = 4f;
+            isSteppingOnSyrup = true;
+        }
+
+        // Reinicia saltos al estar sobre el suelo
         foreach (ContactPoint contact in collision.contacts)
         {
             if (contact.normal.y > 0.5f)
@@ -156,6 +162,16 @@ public class PlayerController : MonoBehaviour
                 jumpsRemaining = maxJumps;
                 break;
             }
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        // Desactiva el estado al salir inmediatamente de la colisión
+        if (collision.gameObject.CompareTag("Syrup"))
+        {
+            isSteppingOnSyrup = false;
+            baseMoveSpeed = 8f;
         }
     }
 }

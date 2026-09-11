@@ -631,7 +631,7 @@ MonoBehaviour:
   slider: {fileID: 4106447764247371925}
   order: {fileID: 5348333990679864327}
   score: {fileID: 0}
-  sliderTimer: 35
+  sliderTimer: 60
   removePoints: 3
   timerActive: 1
 --- !u!1 &4874511511564932779

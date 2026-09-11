@@ -121,23 +121,23 @@ public class Score : MonoBehaviour
 
     void CalculateStars()
     {
-        if (totalPoints >= 15)
+        if (totalPoints >= 30)
         {
             for (int i = 0; i < 5; i++) stars[i].SetActive(true);
         }
-        else if (totalPoints >= 10)
+        else if (totalPoints >= 20)
         {
             for (int i = 0; i < 4; i++) stars[i].SetActive(true);
         }
-        else if (totalPoints >= 8)
+        else if (totalPoints >= 15)
         {
             for (int i = 0; i < 3; i++) stars[i].SetActive(true);
         }
-        else if (totalPoints >= 5)
+        else if (totalPoints >= 10)
         {
             for (int i = 0; i < 2; i++) stars[i].SetActive(true);
         }
-        else if (totalPoints >= 3)
+        else if (totalPoints >= 5)
         {
             for (int i = 0; i < 1; i++) stars[i].SetActive(true);
         }
