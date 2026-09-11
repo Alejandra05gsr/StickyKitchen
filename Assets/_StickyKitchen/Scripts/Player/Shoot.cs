@@ -6,6 +6,9 @@ public class Shoot : MonoBehaviour
 {
     public enum FluidType { Water, Syrup }
 
+    [Header("UI & Aim Settings")]
+    [SerializeField] private GameObject crosshairUI;
+
     [Header("Raycast Settings")]
     [SerializeField] private float raycastDistance = 100f;
     [SerializeField] private LayerMask layerMask;
@@ -41,6 +44,7 @@ public class Shoot : MonoBehaviour
 
     [Header("State")]
     [SerializeField] private FluidType currentFluid = FluidType.Water;
+    private bool isAiming = false;
 
     // Propiedades públicas para UI u otros componentes
     public int CurrentWaterAmmo => currentWaterAmmo;
@@ -50,6 +54,10 @@ public class Shoot : MonoBehaviour
     private void Start()
     {
         ReloadAllAmmo();
+        if (crosshairUI != null)
+        {
+            crosshairUI.SetActive(false);
+        }
     }
 
     private void Update()
@@ -59,7 +67,17 @@ public class Shoot : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        // Verificar si se mantiene presionado el clic derecho (1)
+        isAiming = Input.GetMouseButton(1);
+
+        // Controlar la visibilidad de la cruz según el estado de apuntado
+        if (crosshairUI != null)
+        {
+            crosshairUI.SetActive(isAiming);
+        }
+
+        // Solo permite disparar con clic izquierdo (0) SI se está apuntando con clic derecho
+        if (isAiming && Input.GetMouseButtonDown(0))
         {
             TryShoot();
         }
@@ -98,26 +116,72 @@ public class Shoot : MonoBehaviour
                 //Debug.Log("Desaparece Jarabe");
             }
 
-            // Seleccionar prefabs según el tipo de fluido cargado
-            GameObject projectileToInstantiate;
-            GameObject meshToInstantiate;
+            // 2. Seleccionar prefabs
+            GameObject projectileToInstantiate = (currentFluid == FluidType.Water) ? waterProjectilePrefab : syrupProjectilePrefab;
+            GameObject meshToInstantiate = (currentFluid == FluidType.Water) ? waterPrefab : syrupPrefab;
 
-            if (currentFluid == FluidType.Water)
+            // 3. ¡INSTANTÁNEO! Crear el charco y pegarlo al mueble INMEDIATAMENTE
+            SpawnFluidMeshInstantly(meshToInstantiate, hit);
+
+            // 4. (Opcional) Instanciar la bala voladora solo como efecto estético
+            if (projectileToInstantiate != null)
             {
-                projectileToInstantiate = waterProjectilePrefab != null ? waterProjectilePrefab : waterPrefab;
-                meshToInstantiate = waterPrefab;
-            }
-            else
-            {
-                projectileToInstantiate = syrupProjectilePrefab != null ? syrupProjectilePrefab : syrupPrefab;
-                meshToInstantiate = syrupPrefab;
+                CreateVisualFXProjectile(projectileToInstantiate, hit.point);
             }
 
-            CreateFluid(projectileToInstantiate, meshToInstantiate, hit);
             ConsumeAmmo();
         }
     }
+    // Método que pega el charco AL INSTANTE en el mueble
+    private void SpawnFluidMeshInstantly(GameObject meshPrefab, RaycastHit hit)
+    {
+        if (meshPrefab == null) return;
 
+        // Si es agua, limpiar jarabes cercanos de inmediato
+        if (currentFluid == FluidType.Water)
+        {
+            Collider[] hitColliders = Physics.OverlapSphere(hit.point, 0.5f);
+            foreach (var col in hitColliders)
+            {
+                if (col.CompareTag("Syrup") || col.GetComponent<FluidArea>()?.areaType == FluidArea.FluidAreaType.Syrup)
+                {
+                    col.GetComponent<FluidArea>()?.DisapearFluid();
+                }
+            }
+        }
+
+        // Calcular posición y rotación pegada a la superficie
+        Vector3 spawnPosition = hit.point + hit.normal * 0.02f;
+        Vector3 forward = Vector3.ProjectOnPlane(cameraTransform != null ? cameraTransform.forward : transform.forward, hit.normal).normalized;
+        if (forward == Vector3.zero)
+        {
+            forward = Vector3.Cross(hit.normal, Vector3.up);
+        }
+
+        Quaternion rotation = Quaternion.LookRotation(forward, hit.normal);
+
+        // Instanciar charco en el frame exacto del clic
+        GameObject spawnedFluid = Instantiate(meshPrefab, spawnPosition, rotation);
+
+        // EMPARENTAR INMEDIATAMENTE si es un mueble/objeto móvil
+        if (hit.collider != null && (hit.collider.CompareTag("Interactuable") || hit.collider.CompareTag("Oven")))
+        {
+            spawnedFluid.transform.SetParent(hit.collider.transform, true);
+            Debug.Log("Charco emparentado instantáneamente a: " + hit.collider.name);
+        }
+    }
+
+    // Método simple para lanzar la bala como puro adorno visual (opcional)
+    private void CreateVisualFXProjectile(GameObject projectilePrefab, Vector3 targetPoint)
+    {
+        Vector3 spawnPosition = bulletSpawnPoint != null ? bulletSpawnPoint.position :
+                               (gunTransform != null ? gunTransform.position : transform.position);
+
+        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+        // Un script simple en el proyectil visual que solo lo mueva rápido al punto y se destruya
+        projectile.transform.LookAt(targetPoint);
+        Destroy(projectile, 0.2f); // Se borra a los 0.2 segundos
+    }
     private bool CheckRaycast(out RaycastHit hit)
     {
         Ray ray = Camera.main != null ?
@@ -139,7 +203,7 @@ public class Shoot : MonoBehaviour
             {
                 rayColor = new Color(0.6f, 0.3f, 0f); // Marrón / Naranja para Jarabe
             }
-            else if (hit.collider.CompareTag("Water") || hit.collider.CompareTag("Agua"))
+            else if (hit.collider.CompareTag("Water"))
             {
                 rayColor = Color.cyan; // Azul para Agua
             }

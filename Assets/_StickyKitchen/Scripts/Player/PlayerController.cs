@@ -1,16 +1,22 @@
 using UnityEngine;
-using Unity.Cinemachine;
-using UnityEngine.InputSystem;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
 
-    [Header("Movement")]
-    public float moveSpeed = 7f;
-    public float jumpForce = 6f;
-    private bool canMove;
+    [Header("Base Movement")]
+    public float baseMoveSpeed = 8f;
+    public float baseJumpForce = 6f;
+
+    [Header("Modifiers")]
+    public float syrupSpeedMultiplier = 0.4f;
+    public float syrupJumpMultiplier = 0.5f;
+    public float waterSpeedMultiplier = 1.4f;
+
+    // Flags que activa FluidSurface.cs
+    [HideInInspector] public bool isSteppingOnSyrup;
+    [HideInInspector] public bool isSteppingOnWater;
 
     [Header("Jump & Double Jump")]
     public int maxJumps = 2;
@@ -29,17 +35,11 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 2f;
     private float xRotation = 0f;
 
-    [Header("Ground")]
-    public bool isGrounded;
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        canMove = true;
         jumpsRemaining = maxJumps;
     }
 
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
         MoveCamera();
         Jump();
 
-        // Presionar Shift Izquierdo para hacer Dash
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && !isDashing)
         {
             StartCoroutine(PerformDash());
@@ -57,7 +56,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // No aplicar movimiento regular si estamos en mitad de un Dash
         if (!isDashing)
         {
             Move();
@@ -66,26 +64,41 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (!canMove) return;
-
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 moveDir = (transform.forward * vertical + transform.right * horizontal).normalized;
 
-        rb.linearVelocity = new Vector3(moveDir.x * moveSpeed, rb.linearVelocity.y, moveDir.z * moveSpeed);
+        // Calcular la velocidad según sobre qué colisión está parado
+        float currentSpeed = baseMoveSpeed;
+
+        if (isSteppingOnSyrup)
+        {
+            currentSpeed *= syrupSpeedMultiplier;
+        }
+        else if (isSteppingOnWater)
+        {
+            currentSpeed *= waterSpeedMultiplier;
+        }
+
+        rb.linearVelocity = new Vector3(moveDir.x * currentSpeed, rb.linearVelocity.y, moveDir.z * currentSpeed);
     }
 
     void Jump()
     {
         if (Input.GetKeyDown(KeyCode.Space) && jumpsRemaining > 0)
         {
-            // Limpiar la velocidad vertical antes de saltar para que el segundo salto en el aire se sienta uniforme
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            float currentJump = baseJumpForce;
 
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            if (isSteppingOnSyrup)
+            {
+                currentJump *= syrupJumpMultiplier;
+            }
+
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            rb.AddForce(Vector3.up * currentJump, ForceMode.Impulse);
+
             jumpsRemaining--;
-            isGrounded = false;
         }
     }
 
@@ -94,25 +107,21 @@ public class PlayerController : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        // Obtener la dirección de entrada del jugador
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 dashDir = (transform.forward * vertical + transform.right * horizontal).normalized;
 
-        // Si no está moviendo las teclas WASD, hacer el dash hacia adelante por defecto
         if (dashDir == Vector3.zero)
         {
             dashDir = transform.forward;
         }
 
-        // Resetear la velocidad actual y aplicar fuerza de impulso instantánea
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(dashDir * dashForce, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(dashDuration);
         isDashing = false;
 
-        // Esperar el cooldown antes de poder usar el dash otra vez
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
     }
@@ -137,20 +146,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
-        // Reiniciar saltos al tocar el suelo
-        isGrounded = true;
-        jumpsRemaining = maxJumps;
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        isGrounded = false;
-    }
-
-    public void SetCanMove(bool value)
-    {
-        canMove = value;
+        // Reiniciar los saltos al colisionar con cualquier superficie que esté debajo de los pies
+        foreach (ContactPoint contact in collision.contacts)
+        {
+            if (contact.normal.y > 0.5f)
+            {
+                jumpsRemaining = maxJumps;
+                break;
+            }
+        }
     }
 }

@@ -20,11 +20,11 @@ public class Product : MonoBehaviour
                 break;
             case "Butter":
                 idProduct = 1;
-                points = 3;
+                points = 4;
                 break;
             case "Eggs":
                 idProduct = 2;
-                points = 3;
+                points = 4;
                 break;
             case "Honey":
                 idProduct = 3;
@@ -32,15 +32,15 @@ public class Product : MonoBehaviour
                 break;
             case "Chocolate":
                 idProduct = 4;
-                points = 5;
+                points = 10;
                 break;
             case "Sugar":
                 idProduct = 5;
-                points = 7;
+                points = 9;
                 break;
             case "Coffee":
                 idProduct = 6;
-                points = 10;
+                points = 15;
                 break;
         }
     }
