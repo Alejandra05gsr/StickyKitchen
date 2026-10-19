@@ -3,22 +3,23 @@ using UnityEngine;
 
 public class ObjectMove : MonoBehaviour
 {
-
     public float moveX,moveY, moveZ;
     public float moveSpeed;
 
     public float timeMoving;
-    bool timerActive;
-    float countingTime;
+    public bool timerActive;
+    public float countingTime;
 
     private bool isOpen = false;
     private bool isMoving = false;
+    private bool canMove = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         isOpen = false;
         timerActive = false;
+        canMove = false;
     }
 
     // Update is called once per frame
@@ -32,10 +33,13 @@ public class ObjectMove : MonoBehaviour
     {
         if (!timerActive) return;
 
-        //this.gameObject.transform.position.x += moveX(moveSpeed);
-        moveY += moveSpeed;
-        moveZ += moveSpeed;
-
+        if (canMove )
+        {
+            this.gameObject.transform.position = new Vector3(
+                moveX += moveSpeed, moveY += moveSpeed, moveZ += moveSpeed);
+        }
+        //moveY += moveSpeed;
+        //moveZ += moveSpeed;
     }
 
     public void StartMoving()
@@ -43,6 +47,7 @@ public class ObjectMove : MonoBehaviour
         if (isMoving) return;
         moveSpeed *= -1;
         timerActive = true;
+        canMove = true;
     }
 
     public void Timer()
@@ -53,9 +58,9 @@ public class ObjectMove : MonoBehaviour
 
         if (countingTime >= 1)
         {
-            countingTime += Time.deltaTime;
+            countingTime -= Time.deltaTime;
         }
-        else
+        else if (countingTime <= 0)
         {
             countingTime = 0;
             timerActive= false;

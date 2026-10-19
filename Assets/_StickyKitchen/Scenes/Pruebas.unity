@@ -127,9 +127,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 761416097307010280, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1570265403785223380, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5018715490571324800, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
       propertyPath: m_Name
       value: Palanca
+      objectReference: {fileID: 0}
+    - target: {fileID: 5018715490571324800, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5717599099749835960, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -170,6 +182,22 @@ PrefabInstance:
     - target: {fileID: 5717599099749835960, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5942579959613667095, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6189249299124060226, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663060837207332457, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8756208442145596050, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8843043131160959253, guid: 8ad05bcc8f40b4848ad238d64ee4081d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -640,6 +668,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 9aee4e0d4bc6e0b4e9021134b0da4678, type: 2}
+    - target: {fileID: 2984989818414548598, guid: e48b1837d90fa894b8bce770e9b8b769, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5404611686693138200, guid: e48b1837d90fa894b8bce770e9b8b769, type: 3}
       propertyPath: m_Name
       value: Button
@@ -717,6 +749,10 @@ PrefabInstance:
       propertyPath: crosshairUI
       value: 
       objectReference: {fileID: 1028107115}
+    - target: {fileID: 5695285831137214617, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 34752
+      objectReference: {fileID: 0}
     - target: {fileID: 6564670794566365176, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -1967,7 +2003,7 @@ GameObject:
   - component: {fileID: 1497570447}
   - component: {fileID: 1497570446}
   - component: {fileID: 1497570445}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2080,7 +2116,7 @@ GameObject:
   - component: {fileID: 1672790857}
   - component: {fileID: 1672790856}
   - component: {fileID: 1672790859}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2193,6 +2229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Button
   objectMove: {fileID: 2054576418}
+  canInteract: 1
 --- !u!1 &1737734200
 GameObject:
   m_ObjectHideFlags: 0
@@ -2790,11 +2827,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df89a321f1b6632488eb0b1cb3937d30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectMove
-  moveX: 0
+  moveX: 5
   moveY: 0
-  moveZ: 0
-  moveSpeed: 0
-  timeMoving: 0
+  moveZ: 5
+  moveSpeed: 2
+  timeMoving: 3
+  timerActive: 1
+  countingTime: 0
 --- !u!1 &2109212654
 GameObject:
   m_ObjectHideFlags: 0

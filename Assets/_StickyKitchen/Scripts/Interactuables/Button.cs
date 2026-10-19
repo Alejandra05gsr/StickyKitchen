@@ -5,10 +5,12 @@ public class Button : MonoBehaviour
     public GameObject objectMove;
     int syrupCount;
 
+    public bool canInteract = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        canInteract = true;
     }
 
     // Update is called once per frame
@@ -19,14 +21,22 @@ public class Button : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag ("Syrup"))
+        if (collision.gameObject.CompareTag ("Player") && canInteract)
         {
             //Realizar la acción mover
             objectMove.GetComponent<ObjectMove>().StartMoving();
 
-            //Checar si tiene más de 3 jarabes en la palanca, si es asi entonces se estanca
+            canInteract = false;
 
         }
+
+        if (collision.gameObject.CompareTag("Water") && !canInteract)
+        {
+            canInteract = true;
+        }
     }
+
+    //Podría guardar como hijos en una lista los disparos de jarabes para que si tiene 3 o más
+    //entonces se desactive el canInteract
 
 }
