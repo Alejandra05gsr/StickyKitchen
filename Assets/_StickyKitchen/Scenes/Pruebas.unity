@@ -2680,10 +2680,11 @@ MonoBehaviour:
   boxSize: {x: 4, y: 10, z: 3}
   spawnCenter: {x: 0, y: 4.65, z: 0}
   particleRadius: 0.1
+  spawnJitter: 0.2
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   particleRenderSize: 8
   material: {fileID: 2100000, guid: 8584dcb5e2475d548af12a3cf6325a13, type: 2}
-  shader: {fileID: 0}
+  shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
   particles: []
 --- !u!4 &1881931652
 Transform:
