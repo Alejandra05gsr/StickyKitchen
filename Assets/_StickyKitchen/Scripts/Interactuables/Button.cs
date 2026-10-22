@@ -21,19 +21,19 @@ public class Button : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag ("Player") && canInteract)
+        if (collision.gameObject.CompareTag ("Player")) //&& canInteract
         {
             //Realizar la acción mover
             objectMove.GetComponent<ObjectMove>().StartMoving();
 
-            canInteract = false;
+            //canInteract = false;
 
         }
 
-        if (collision.gameObject.CompareTag("Water") && !canInteract)
-        {
-            canInteract = true;
-        }
+        //if (collision.gameObject.CompareTag("Water") && !canInteract)
+        //{
+        //    canInteract = true;
+        //}
     }
 
     //Podría guardar como hijos en una lista los disparos de jarabes para que si tiene 3 o más
