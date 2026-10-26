@@ -805,6 +805,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7320175097470330673, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9193637442441595451, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2686,6 +2690,12 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 8584dcb5e2475d548af12a3cf6325a13, type: 2}
   shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
   particles: []
+  boundDamping: -0.3
+  viscosity: -0.003
+  particleMass: 1
+  gasConstant: 2
+  restingDensity: 1
+  timestep: 0.007
 --- !u!4 &1881931652
 Transform:
   m_ObjectHideFlags: 0
