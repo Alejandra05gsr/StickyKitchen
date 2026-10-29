@@ -60,30 +60,35 @@ public class SPH : MonoBehaviour
     private int computeForceKernel;
     private int densityPressureKernel;
 
-  
-    
+    private static readonly int SizeProperty = Shader.PropertyToID("_size");
+    private static readonly int ParticlesBufferProperty = Shader.PropertyToID("_particlesBuffer");
+
+
     //----------------------------
 
 
     private void Awake()
     {
-        SpawnParticlesInBox (); //Spawn Particles
-        //Setup Args for Instanced Particle Rendering
-        uint[] args =
-        {
-            particleMesh.GetIndexCount(0),
-            (uint)totalParticles,
-            particleMesh.GetIndexStart(0),
-            particleMesh.GetBaseVertex(0), 
-            0
-        };
+        // 1. Llenar el array en la CPU FIRST
+        SpawnParticlesInBox();
 
+        // 2. Crear buffers
+        _particlesBuffer = new ComputeBuffer(totalParticles, 44);
+
+        // 3. TRANSFERIR DATOS A LA GPU (CRÍTICO: No omitir este paso aquí)
+        _particlesBuffer.SetData(particles);
+
+        // 4. Configurar argumentos de renderizado
+        uint[] args = new uint[5]
+        {
+        particleMesh.GetIndexCount(0),
+        (uint)totalParticles,
+        particleMesh.GetIndexStart(0),
+        particleMesh.GetBaseVertex(0),
+        0
+        };
         _argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         _argsBuffer.SetData(args);
-
-        //Setup Particle Buffer
-        _particlesBuffer = new ComputeBuffer(totalParticles, 44);
-        _particlesBuffer.SetData(particles);
 
         SetupComputeBuffers();
     }
@@ -104,9 +109,7 @@ public class SPH : MonoBehaviour
     }
 
 
-    private static readonly int SizeProperty = Shader.PropertyToID("_size");
-    private static readonly int ParticlesBufferProperty = Shader.PropertyToID("_particlesBuffer");
-
+   
     private void Update()
     {
         //Render the particles
@@ -116,13 +119,13 @@ public class SPH : MonoBehaviour
         if (showSpheres)
         {
             Graphics.DrawMeshInstancedIndirect(
-                particleMesh,
-                0,
-                material,
-                new Bounds (Vector3.zero, boxSize),
-                _argsBuffer,
-                castShadows: UnityEngine.Rendering.ShadowCastingMode.Off
-                );
+                 particleMesh,
+                 0,
+                 material,
+                 new Bounds(Vector3.zero, Vector3.one * 1000f),
+                 _argsBuffer,
+                 castShadows: UnityEngine.Rendering.ShadowCastingMode.Off
+             );
 
         }
     }
@@ -135,6 +138,15 @@ public class SPH : MonoBehaviour
         computeForceKernel = shader.FindKernel("ComputeForces");
         densityPressureKernel = shader.FindKernel("ComputeDensityPressure");
 
+        //
+        if (integrateKernel < 0 || computeForceKernel < 0 || densityPressureKernel < 0)
+        {
+            Debug.LogError("¡No se encontraron los kernels en el Compute Shader! Revisa los nombres o si hay errores de compilación en SPHCompute.compute");
+            return;
+        }
+        //
+
+
         shader.SetInt("particleLength", totalParticles);
         shader.SetFloat("particleMass", particleMass);
         shader.SetFloat("viscosity", viscosity);
@@ -145,10 +157,10 @@ public class SPH : MonoBehaviour
         shader.SetVector("boxSize", boxSize);
 
         shader.SetFloat("radius", particleRadius);
-        shader.SetFloat("radius", particleRadius * particleRadius);
-        shader.SetFloat("radius", particleRadius * particleRadius * particleRadius);
-        shader.SetFloat("radius", particleRadius * particleRadius * particleRadius * particleRadius);
-        shader.SetFloat("radius", particleRadius * particleRadius * particleRadius * particleRadius * particleRadius);
+        shader.SetFloat("radius2", particleRadius * particleRadius);
+        shader.SetFloat("radius3", particleRadius * particleRadius * particleRadius);
+        shader.SetFloat("radius4", particleRadius * particleRadius * particleRadius * particleRadius);
+        shader.SetFloat("radius5", particleRadius * particleRadius * particleRadius * particleRadius * particleRadius);
 
         shader.SetBuffer(integrateKernel, "_particles", _particlesBuffer);
         shader.SetBuffer(computeForceKernel, "_particles", _particlesBuffer);
@@ -161,13 +173,24 @@ public class SPH : MonoBehaviour
     {
         shader.SetVector("boxSize", boxSize);
         shader.SetFloat("timestep", timestep);
-        shader.SetVector("spherePos", collisionSphere.transform.position);
-        shader.SetFloat("sphereRadius", collisionSphere.transform.localScale.x/2);
+        if (collisionSphere != null)
+        {
+            shader.SetVector("spherePos", collisionSphere.transform.position);
+            shader.SetFloat("sphereRadius", collisionSphere.transform.localScale.x / 2f);
+        }
 
-        shader.Dispatch(integrateKernel, totalParticles / 100, 1, 1);
-        shader.Dispatch(computeForceKernel, totalParticles / 100, 1, 1);
-        shader.Dispatch(densityPressureKernel, totalParticles / 100, 1, 1);
-    }
+        //shader.Dispatch(integrateKernel, totalParticles / 100, 1, 1);
+        //shader.Dispatch(computeForceKernel, totalParticles / 100, 1, 1);
+        //shader.Dispatch(densityPressureKernel, totalParticles / 100, 1, 1);
+
+        // CORREGIDO: Orden correcto de ejecución sincrónica del fluido
+        // 1. Calcular Presión y Densidad
+        shader.Dispatch(densityPressureKernel, Mathf.CeilToInt(totalParticles / 100f), 1, 1);
+        // 2. Calcular Fuerzas resultantes
+        shader.Dispatch(computeForceKernel, Mathf.CeilToInt(totalParticles / 100f), 1, 1);
+        // 3. Mover/Integrar las partículas
+        shader.Dispatch(integrateKernel, Mathf.CeilToInt(totalParticles / 100f), 1, 1);
+}
 
 
     private void SpawnParticlesInBox()
@@ -193,6 +216,12 @@ public class SPH : MonoBehaviour
 
         particles = _particles.ToArray();
 
+    }
+
+    private void OnDestroy()
+    {
+        _particlesBuffer?.Release();
+        _argsBuffer?.Release();
     }
 
 }
