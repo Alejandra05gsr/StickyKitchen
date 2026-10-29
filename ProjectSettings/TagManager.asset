@@ -18,6 +18,8 @@ TagManager:
   - Coffee
   - Honey
   - Oven
+  - FillWater
+  - FillSyrup
   layers:
   - Default
   - TransparentFX

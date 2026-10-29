@@ -17,12 +17,12 @@ public class Shoot : MonoBehaviour
     [SerializeField] private Transform bulletSpawnPoint; 
 
     [Header("Projectile Prefabs (Balas Voladoras)")]
-    [SerializeField] private GameObject waterProjectilePrefab; // Esfera de agua voladora
-    [SerializeField] private GameObject syrupProjectilePrefab; // Esfera de jarabe voladora
+    [SerializeField] private GameObject waterProjectilePrefab; 
+    [SerializeField] private GameObject syrupProjectilePrefab; 
 
     [Header("Fluid Mesh Prefabs (Mallas/Charcos)")]
-    [SerializeField] private GameObject waterPrefab; // Malla/Charco de agua
-    [SerializeField] private GameObject syrupPrefab; // Malla/Charco de jarabe
+    [SerializeField] private GameObject waterPrefab; 
+    [SerializeField] private GameObject syrupPrefab; 
     [SerializeField] private GameObject waterShader;
     [SerializeField] private GameObject syrupShader;
 
@@ -291,21 +291,35 @@ public class Shoot : MonoBehaviour
         UpdateShaders();
     }
 
-    public void OnTriggerEnter(Collider other)
+    //public void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("WaterAmmo"))
+    //    {
+    //        currentWaterAmmo = maxWaterAmmo;
+    //        currentWaterShader = maxFillValue;
+    //        UpdateShaders();
+    //    }
+    //    else if (other.CompareTag("SyrupAmmo"))
+    //    {
+    //        currentSyrupAmmo = maxSyrupAmmo;
+    //        currentSyrupShader = maxFillValue;
+    //        UpdateShaders();
+    //    }
+    //}
+
+    public void UpdateAmmoWater()
     {
-        if (other.CompareTag("WaterAmmo"))
-        {
-            currentWaterAmmo = maxWaterAmmo;
-            currentWaterShader = maxFillValue;
-            UpdateShaders();
-        }
-        else if (other.CompareTag("SyrupAmmo"))
-        {
-            currentSyrupAmmo = maxSyrupAmmo;
-            currentSyrupShader = maxFillValue;
-            UpdateShaders();
-        }
+        currentWaterAmmo = maxWaterAmmo;
+        currentWaterShader = maxFillValue;
+        UpdateShaders();
     }
+    public void UpdateAmmoSyrup()
+    {
+        currentSyrupAmmo = maxSyrupAmmo;
+        currentSyrupShader = maxFillValue;
+        UpdateShaders();
+    }
+
 
     void UpdateShaders()
     {

@@ -5664,8 +5664,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7756806002394972348, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9090131911966528818}
+    - targetCorrespondingSourceObject: {fileID: 3266246837560967442, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1516112735778124082}
   m_SourcePrefab: {fileID: 100100000, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+--- !u!1 &1757628069878823053 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7756806002394972348, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+  m_PrefabInstance: {fileID: 8341208143589488689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9090131911966528818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1757628069878823053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3941497f6c6d34d8788b5ba01b2593, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tanks
+  playerShoot: {fileID: 5695285831137214617}
 --- !u!1 &6083872263788531192 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2859694555350480329, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
@@ -5676,6 +5700,24 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3285210870085766275, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
   m_PrefabInstance: {fileID: 8341208143589488689}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6815607243571968291 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3266246837560967442, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+  m_PrefabInstance: {fileID: 8341208143589488689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1516112735778124082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6815607243571968291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb3941497f6c6d34d8788b5ba01b2593, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tanks
+  playerShoot: {fileID: 0}
 --- !u!4 &7461502779063075777 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}

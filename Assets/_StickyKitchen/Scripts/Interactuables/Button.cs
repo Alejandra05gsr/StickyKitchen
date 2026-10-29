@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Button : MonoBehaviour
 {
-    public GameObject objectMove;
+    public GameObject[] objectMove;
     int syrupCount;
 
     public bool canInteract = true;
@@ -24,7 +24,13 @@ public class Button : MonoBehaviour
         if (collision.gameObject.CompareTag ("Player")) //&& canInteract
         {
             //Realizar la acción mover
-            objectMove.GetComponent<ObjectMove>().StartMoving();
+            //Por cada objeto en el array de objetos a mover, llamar al método StartMoving() del script ObjectMove
+            foreach(GameObject obj in objectMove)
+            {
+                obj.GetComponent<ObjectMove>().StartMoving();
+            }
+
+            //objectMove.GetComponent<ObjectMove>().StartMoving();
 
             //canInteract = false;
 
