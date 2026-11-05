@@ -672,7 +672,11 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 1, z: -5}
   moveSpeed: 5
   timeMoving: 2
+  rotateDirection: {x: 0, y: 0, z: 0}
+  rotateSpeed: 0
+  timeRotating: 0
   isMoving: 0
+  isRotating: 0
 --- !u!1001 &397114633
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1924,7 +1928,11 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 6, z: 0}
   moveSpeed: 3
   timeMoving: 4
+  rotateDirection: {x: 0, y: 0, z: 0}
+  rotateSpeed: 0
+  timeRotating: 0
   isMoving: 0
+  isRotating: 0
 --- !u!4 &1201113177
 Transform:
   m_ObjectHideFlags: 0
@@ -3247,13 +3255,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SPH
   collisionSphere: {fileID: 1480357433}
   showSpheres: 1
-  numToSpawn: {x: 10, y: 10, z: 10}
+  numToSpawn: {x: 5, y: 5, z: 5}
   boxSize: {x: 4, y: 10, z: 3}
-  spawnCenter: {x: -1.84, y: 3.85, z: -0.66}
+  spawnCenter: {x: 0, y: 3.85, z: 0}
   particleRadius: 0.1
   spawnJitter: 0.2
   particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  particleRenderSize: 8
+  particleRenderSize: 0.1
   material: {fileID: 2100000, guid: 496bcb237388d8548a3883473cc53043, type: 2}
   shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
   particles: []
@@ -3262,7 +3270,7 @@ MonoBehaviour:
   particleMass: 1
   gasConstant: 2
   restingDensity: 1
-  timestep: 0.0001
+  timestep: 0.001
 --- !u!4 &1881931652
 Transform:
   m_ObjectHideFlags: 0
@@ -3341,7 +3349,11 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 1, z: 0}
   moveSpeed: 2
   timeMoving: 3
+  rotateDirection: {x: 0, y: 0, z: 0}
+  rotateSpeed: 0
+  timeRotating: 0
   isMoving: 0
+  isRotating: 0
 --- !u!65 &1933265041
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3703,7 +3715,11 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 1, z: 5}
   moveSpeed: 5
   timeMoving: 2
+  rotateDirection: {x: 0, y: 0, z: 0}
+  rotateSpeed: 0
+  timeRotating: 0
   isMoving: 0
+  isRotating: 0
 --- !u!1 &2054576418
 GameObject:
   m_ObjectHideFlags: 0
@@ -3832,7 +3848,11 @@ MonoBehaviour:
   moveDirection: {x: 0, y: 1, z: 0}
   moveSpeed: 2
   timeMoving: 3
+  rotateDirection: {x: 0, y: 0, z: 0}
+  rotateSpeed: 0
+  timeRotating: 0
   isMoving: 0
+  isRotating: 0
 --- !u!1 &2109212654
 GameObject:
   m_ObjectHideFlags: 0

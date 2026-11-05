@@ -21,11 +21,13 @@ public class Button : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag ("Player")) //&& canInteract
+        Debug.Log(collision.gameObject.name + " ha colisionado con el botón");
+
+        if (collision.gameObject.CompareTag ("Player") || collision.gameObject.CompareTag ("Syrup")) //&& canInteract
         {
             //Realizar la acción mover
             //Por cada objeto en el array de objetos a mover, llamar al método StartMoving() del script ObjectMove
-            foreach(GameObject obj in objectMove)
+            foreach (GameObject obj in objectMove)
             {
                 obj.GetComponent<ObjectMove>().StartMoving();
             }
