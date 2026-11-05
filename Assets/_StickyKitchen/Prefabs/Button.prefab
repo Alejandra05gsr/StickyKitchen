@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6210671268110545498}
   - component: {fileID: 569377458313963062}
   - component: {fileID: 5398881143037341742}
+  - component: {fileID: 2240984359611119915}
   m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
@@ -114,6 +115,20 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &2240984359611119915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2984989818414548598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23d49fd14b8be0d4bb4a49c1d723f85d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Button
+  objectMove: []
+  canInteract: 1
 --- !u!1 &4229579453214767084
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,5 +287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23d49fd14b8be0d4bb4a49c1d723f85d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Button
-  objectMove: {fileID: 0}
+  objectMove:
+  - {fileID: 0}
   canInteract: 1
