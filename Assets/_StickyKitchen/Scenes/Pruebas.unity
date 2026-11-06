@@ -950,6 +950,10 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5283632607072986200, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5695285831137214617, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       propertyPath: crosshairUI
       value: 
@@ -1038,14 +1042,29 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7429378918623309259, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8375103576544258851, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9193637442441595451, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 9193637442441595451, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 456827689378539616, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1838522062}
     - targetCorrespondingSourceObject: {fileID: 1757628069878823053, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1833866219}
@@ -3122,6 +3141,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &1838522060 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 456827689378539616, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+  m_PrefabInstance: {fileID: 514151886}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1838522062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838522060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60f5bfabb5daea74bab2a0cb875bed34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FluidRayMarching
+  cam: {fileID: 0}
+  sph: {fileID: 1881931651}
+  fluidMaterial: {fileID: 2100000, guid: 5f9f64993cc0ac244be5a43189f7166d, type: 2}
+  viewRadius: 0.18
+  blendStrength: 0.5
+  waterColor: {r: 0.02, g: 0.45, b: 0.85, a: 0.85}
+  ambientLight: {r: 0.2, g: 0.25, b: 0.3, a: 1}
+  lightSource: {fileID: 0}
+  maxSteps: 96
+  maxDistance: 100
 --- !u!1 &1851041541
 GameObject:
   m_ObjectHideFlags: 0
@@ -3254,7 +3300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SPH
   collisionSphere: {fileID: 1480357433}
-  showSpheres: 1
+  showSpheres: 0
   numToSpawn: {x: 5, y: 5, z: 5}
   boxSize: {x: 4, y: 10, z: 3}
   spawnCenter: {x: 0, y: 3.85, z: 0}
