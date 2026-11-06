@@ -46,6 +46,9 @@ public class Shoot : MonoBehaviour
     [SerializeField] private FluidType currentFluid = FluidType.Water;
     private bool isAiming = false;
 
+    [Header("Particulas por impacto")]
+    [SerializeField] private FluidImpactEmitter fluidImpactEmitter;
+
     // Propiedades públicas para UI u otros componentes
     public int CurrentWaterAmmo => currentWaterAmmo;
     public int CurrentSyrupAmmo => currentSyrupAmmo;
@@ -123,6 +126,16 @@ public class Shoot : MonoBehaviour
             // 3. ¡INSTANTÁNEO! Crear el charco y pegarlo al mueble INMEDIATAMENTE
             SpawnFluidMeshInstantly(meshToInstantiate, hit);
 
+            if (fluidImpactEmitter != null)
+            {
+                Vector3 shotOrigin = bulletSpawnPoint != null ? bulletSpawnPoint.position : (cameraTransform != null ? cameraTransform.position : transform.position);
+                fluidImpactEmitter.Emit(currentFluid, hit, shotOrigin);
+            }
+            else
+            {
+                Debug.LogWarning("Asigna Fluid Impact Emitter en Shoot.", this);
+            }
+
             // 4. (Opcional) Instanciar la bala voladora solo como efecto estético
             if (projectileToInstantiate != null)
             {
@@ -162,6 +175,7 @@ public class Shoot : MonoBehaviour
 
         // Instanciar charco en el frame exacto del clic
         GameObject spawnedFluid = Instantiate(meshPrefab, spawnPosition, rotation);
+        foreach (Renderer meshRenderer in spawnedFluid.GetComponentsInChildren<Renderer>()) meshRenderer.enabled = false;
 
         // EMPARENTAR INMEDIATAMENTE si es un mueble/objeto móvil
         if (hit.collider != null && (hit.collider.CompareTag("Interactuable") || hit.collider.CompareTag("Oven")))

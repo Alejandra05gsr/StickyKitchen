@@ -1,211 +1,231 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 [System.Serializable]
 [StructLayout(LayoutKind.Sequential, Size = 44)]
 public struct Particle
 {
-    public float pressure; // 4
-    public float density; // 8
-    public Vector3 currentForce; // 20
-    public Vector3 velocity; // 32
-    public Vector3 position; // 44 total bytes
+    public float pressure;
+    public float density;
+    public Vector3 currentForce;
+    public Vector3 velocity;
+    public Vector3 position;
 }
 
 public class SPH : MonoBehaviour
 {
-    [Header("General")]
-    public Transform collisionSphere;
-    public bool showSpheres = true;
-    public Vector3Int numToSpawn = new Vector3Int(10, 10, 10);
-    private int totalParticles
-    {
-        get
-        {
-            return numToSpawn.x * numToSpawn.y * numToSpawn.z;
-        }
-    }
-    public Vector3 boxSize = new Vector3(4, 10, 3);
+    [Header("Capacidad")]
+    [Min(1)] public int maxParticles = 256;
+    public bool startWithParticles;
+    public Vector3Int numToSpawn = new Vector3Int(5, 5, 5);
     public Vector3 spawnCenter;
-    public float particleRadius = 0.1f;
-    public float spawnJitter = 0.2f;
 
-    [Header("Particle Rendering")]
+    [Header("Dominio en coordenadas de mundo")]
+    public Vector3 boxCenter;
+    public Vector3 boxSize = new Vector3(4, 10, 3);
+    [Min(0.001f)] public float particleRadius = 0.1f;
+    public Transform collisionSphere;
+
+    [Header("Depuracion")]
+    public bool showSpheres;
     public Mesh particleMesh;
-    public float particleRenderSize = 8f;
     public Material material;
+    public float particleRenderSize = 0.1f;
 
-    [Header("Compute")]
+    [Header("Simulacion")]
     public ComputeShader shader;
-    public Particle[] particles;
-
-    [Header("Fluid Constants")]
     public float boundDamping = -0.3f;
     public float viscosity = -0.003f;
     public float particleMass = 1f;
     public float gasConstant = 2f;
     public float restingDensity = 1f;
-    public float timestep = 0.007f;
+    public float timestep = 0.001f;
 
-    // Private Variables
-    private ComputeBuffer _argsBuffer;
     public ComputeBuffer _particlesBuffer;
+    public int ActiveParticleCount { get; private set; }
+
+    public Bounds SimulationBounds => new Bounds(boxCenter, boxSize);
+    public bool IsReady => runtimeShader != null && _particlesBuffer != null && _particlesBuffer.IsValid();
+
+    private ComputeShader runtimeShader;
+    private ComputeBuffer argsBuffer;
+    private Particle[] upload;
+    private readonly uint[] args = new uint[5];
+    private MaterialPropertyBlock properties;
+
+    private int writeIndex;
+    private int densityKernel;
+    private int forceKernel;
     private int integrateKernel;
-    private int computeForceKernel;
-    private int densityPressureKernel;
-
-    private void OnDrawGizmos()
-    {
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(Vector3.zero, boxSize);
-
-        if (!Application.isPlaying)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(spawnCenter, 0.1f);
-        }
-
-    }
 
     private void Awake()
     {
+        if (shader == null || !SystemInfo.supportsComputeShaders)
+        {
+            Debug.LogError("SPH necesita un Compute Shader asignado y soporte de compute shaders.", this);
+            enabled = false;
+            return;
+        }
 
-        SpawnParticlesInBox(); // Spawn Particles
+        int capacity = Mathf.Max(1, maxParticles);
+        upload = new Particle[capacity];
 
-        if (material != null) material.enableInstancing = true;
+        _particlesBuffer = new ComputeBuffer(capacity, 44);
+        _particlesBuffer.SetData(upload);
 
-        // Setup Args for Instanced Particle Rendering
-        uint[] args = {
-            particleMesh.GetIndexCount(0),
-            (uint)totalParticles,
-            particleMesh.GetIndexStart(0),
-            particleMesh.GetBaseVertex(0),
-            0
-        };
+        // Cada liquido necesita su propia instancia del Compute Shader.
+        runtimeShader = Instantiate(shader);
 
-        _argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
-        _argsBuffer.SetData(args);
+        densityKernel = runtimeShader.FindKernel("ComputeDensityPressure");
+        forceKernel = runtimeShader.FindKernel("ComputeForces");
+        integrateKernel = runtimeShader.FindKernel("Integrate");
 
-        // Setup Particle Buffer
-        _particlesBuffer = new ComputeBuffer(totalParticles, 44);
-        _particlesBuffer.SetData(particles);
+        runtimeShader.SetBuffer(densityKernel, "_particles", _particlesBuffer);
+        runtimeShader.SetBuffer(forceKernel, "_particles", _particlesBuffer);
+        runtimeShader.SetBuffer(integrateKernel, "_particles", _particlesBuffer);
 
-        SetupComputeBuffers();
+        if (particleMesh != null && material != null)
+        {
+            material.enableInstancing = true;
+            properties = new MaterialPropertyBlock();
 
+            args[0] = particleMesh.GetIndexCount(0);
+            args[2] = particleMesh.GetIndexStart(0);
+            args[3] = particleMesh.GetBaseVertex(0);
+
+            argsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
+            argsBuffer.SetData(args);
+        }
+
+        if (startWithParticles)
+        {
+            Emit(spawnCenter, Vector3.up, Vector3.zero, numToSpawn.x * numToSpawn.y * numToSpawn.z);
+        }
     }
 
-    private void SetupComputeBuffers()
+    public int Emit(Vector3 point, Vector3 normal, Vector3 velocity, int amount)
     {
+        if (!isActiveAndEnabled || !IsReady || amount <= 0) return 0;
 
-        integrateKernel = shader.FindKernel("Integrate");
-        computeForceKernel = shader.FindKernel("ComputeForces");
-        densityPressureKernel = shader.FindKernel("ComputeDensityPressure");
+        int requested = Mathf.Min(amount, upload.Length);
+        int side = 1;
 
-        shader.SetInt("particleLength", totalParticles);
-        shader.SetFloat("particleMass", particleMass);
-        shader.SetFloat("viscosity", viscosity);
-        shader.SetFloat("gasConstant", gasConstant);
-        shader.SetFloat("restDensity", restingDensity);
-        shader.SetFloat("boundDamping", boundDamping);
-        shader.SetFloat("pi", Mathf.PI);
-        shader.SetVector("boxSize", boxSize);
+        while (side * side * side < requested) side++;
 
-        shader.SetFloat("radius", particleRadius);
-        shader.SetFloat("radius2", particleRadius * particleRadius);
-        shader.SetFloat("radius3", particleRadius * particleRadius * particleRadius);
-        shader.SetFloat("radius4", particleRadius * particleRadius * particleRadius * particleRadius);
-        shader.SetFloat("radius5", particleRadius * particleRadius * particleRadius * particleRadius * particleRadius);
+        Vector3 n = normal.sqrMagnitude > 0.0001f ? normal.normalized : Vector3.up;
+        Vector3 tangent = Vector3.Cross(n, Mathf.Abs(n.y) < 0.95f ? Vector3.up : Vector3.right).normalized;
+        Vector3 bitangent = Vector3.Cross(n, tangent);
 
-        shader.SetBuffer(integrateKernel, "_particles", _particlesBuffer);
-        shader.SetBuffer(computeForceKernel, "_particles", _particlesBuffer);
-        shader.SetBuffer(densityPressureKernel, "_particles", _particlesBuffer);
+        float radius = Mathf.Max(0.001f, particleRadius);
+        float spacing = radius * 2f;
 
+        Vector3 min = SimulationBounds.min + Vector3.one * radius;
+        Vector3 max = SimulationBounds.max - Vector3.one * radius;
+
+        int count = 0;
+
+        for (int i = 0; i < requested; i++)
+        {
+            float x = i % side - (side - 1) * 0.5f;
+            float z = i / side % side - (side - 1) * 0.5f;
+            int y = i / (side * side);
+
+            Vector3 position = point + n * (radius + 0.02f + y * spacing) + (tangent * x + bitangent * z) * spacing;
+
+            if (position.x < min.x || position.y < min.y || position.z < min.z || position.x > max.x || position.y > max.y || position.z > max.z) continue;
+
+            upload[count++] = new Particle
+            {
+                position = position,
+                velocity = velocity
+            };
+        }
+
+        if (count == 0)
+        {
+            Debug.LogWarning("El impacto o sus particulas quedan fuera de Box Center / Box Size.", this);
+            return 0;
+        }
+
+        // Copiar solamente las particulas nuevas.
+        int first = Mathf.Min(count, upload.Length - writeIndex);
+
+        _particlesBuffer.SetData(upload, 0, writeIndex, first);
+
+        if (count > first)
+        {
+            _particlesBuffer.SetData(upload, first, 0, count - first);
+        }
+
+        writeIndex = (writeIndex + count) % upload.Length;
+        ActiveParticleCount = Mathf.Min(upload.Length, ActiveParticleCount + count);
+
+        if (argsBuffer != null)
+        {
+            args[1] = (uint)ActiveParticleCount;
+            argsBuffer.SetData(args);
+        }
+
+        return count;
     }
-
 
     private void FixedUpdate()
     {
-        shader.SetVector("boxSize", boxSize);
-        shader.SetFloat("timestep", timestep);
-        shader.SetVector("spherePos", collisionSphere.transform.position);
-        shader.SetFloat("sphereRadius", collisionSphere.transform.localScale.x / 2);
+        if (!IsReady || ActiveParticleCount == 0) return;
 
-        int threadGroups = Mathf.CeilToInt(totalParticles / 100f);
+        float radius = Mathf.Max(0.001f, particleRadius);
 
-        shader.Dispatch(densityPressureKernel, threadGroups, 1, 1);
-        shader.Dispatch(computeForceKernel, threadGroups, 1, 1);
-        shader.Dispatch(integrateKernel, threadGroups, 1, 1);
+        runtimeShader.SetInt("particleLength", ActiveParticleCount);
+        runtimeShader.SetFloat("particleMass", Mathf.Max(0.0001f, particleMass));
+        runtimeShader.SetFloat("viscosity", viscosity);
+        runtimeShader.SetFloat("gasConstant", gasConstant);
+        runtimeShader.SetFloat("restDensity", restingDensity);
+        runtimeShader.SetFloat("boundDamping", boundDamping);
+        runtimeShader.SetFloat("pi", Mathf.PI);
+
+        runtimeShader.SetFloat("radius", radius);
+        runtimeShader.SetFloat("radius2", radius * radius);
+        runtimeShader.SetFloat("radius3", Mathf.Pow(radius, 3));
+        runtimeShader.SetFloat("radius4", Mathf.Pow(radius, 4));
+        runtimeShader.SetFloat("radius5", Mathf.Pow(radius, 5));
+
+        runtimeShader.SetFloat("timestep", timestep);
+        runtimeShader.SetVector("boxCenter", boxCenter);
+        runtimeShader.SetVector("boxSize", boxSize);
+
+        runtimeShader.SetVector("spherePos", collisionSphere != null ? collisionSphere.position : Vector3.zero);
+        runtimeShader.SetFloat("sphereRadius", collisionSphere != null ? Mathf.Abs(collisionSphere.lossyScale.x) * 0.5f : 0f);
+
+        int groups = Mathf.CeilToInt(ActiveParticleCount / 100f);
+
+        runtimeShader.Dispatch(densityKernel, groups, 1, 1);
+        runtimeShader.Dispatch(forceKernel, groups, 1, 1);
+        runtimeShader.Dispatch(integrateKernel, groups, 1, 1);
     }
-
-
-    private void SpawnParticlesInBox()
-    {
-
-        Vector3 spawnPoint = spawnCenter;
-        List<Particle> _particles = new List<Particle>();
-
-        for (int x = 0; x < numToSpawn.x; x++)
-        {
-            for (int y = 0; y < numToSpawn.y; y++)
-            {
-                for (int z = 0; z < numToSpawn.z; z++)
-                {
-
-                    Vector3 spawnPos = spawnPoint + new Vector3(x * particleRadius * 2, y * particleRadius * 2, z * particleRadius * 2);
-
-                    // Randomize spawning position a little bit for more convincing simulation
-                    spawnPos += Random.onUnitSphere * particleRadius * spawnJitter;
-
-                    Particle p = new Particle
-                    {
-                        position = spawnPos
-                    };
-
-                    _particles.Add(p);
-                }
-            }
-        }
-
-        particles = _particles.ToArray();
-
-    }
-
-
-    private static readonly int SizeProperty = Shader.PropertyToID("_Size");
-    private static readonly int ParticlesBufferProperty = Shader.PropertyToID("_particlesBuffer");
 
     private void Update()
     {
+        if (!showSpheres || !IsReady || ActiveParticleCount == 0 || argsBuffer == null || material == null) return;
 
-        // Render the particles
-        material.SetFloat(SizeProperty, particleRenderSize);
-        material.SetBuffer(ParticlesBufferProperty, _particlesBuffer);
+        properties.SetFloat("_Size", particleRenderSize);
+        properties.SetBuffer("_particlesBuffer", _particlesBuffer);
 
-        if (showSpheres)
-            Graphics.DrawMeshInstancedIndirect(
-                particleMesh,
-                0,
-                material,
-                new Bounds(Vector3.zero, boxSize),
-                _argsBuffer,
-                castShadows: UnityEngine.Rendering.ShadowCastingMode.Off
-            );
-
-
+        Graphics.DrawMeshInstancedIndirect(particleMesh, 0, material, SimulationBounds, argsBuffer, 0, properties, ShadowCastingMode.Off);
     }
 
-
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(boxCenter, boxSize);
+    }
 
     private void OnDestroy()
     {
-        _argsBuffer?.Release();
+        argsBuffer?.Release();
         _particlesBuffer?.Release();
-
-        _argsBuffer = null;
         _particlesBuffer = null;
-    }
 
+        if (runtimeShader != null) Destroy(runtimeShader);
+    }
 }

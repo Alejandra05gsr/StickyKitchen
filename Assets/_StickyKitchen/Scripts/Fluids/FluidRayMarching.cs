@@ -5,87 +5,91 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Camera))]
 public class FluidRayMarching : MonoBehaviour
 {
-    public Camera cam;
-    public SPH sph;
-    public Material fluidMaterial;
+    [System.Serializable]
+    public class FluidLayer
+    {
+        public SPH sph;
+        public Material fluidMaterial;
 
-    [Header("Superficie")]
-    [Min(0.001f)] public float viewRadius = 0.15f;
-    [Min(0f)] public float blendStrength = 0.12f;
-    public Color waterColor = new Color(0.02f, 0.45f, 0.85f, 0.85f);
+        public Color color = new Color(0.02f, 0.45f, 0.85f, 0.85f);
+
+        [Min(0.001f)] public float viewRadius = 0.18f;
+        [Min(0f)] public float blendStrength = 0.5f;
+    }
+
+    public FluidLayer[] fluids = new FluidLayer[] { new FluidLayer(), new FluidLayer() };
+
     public Color ambientLight = new Color(0.2f, 0.25f, 0.3f, 1f);
     public Light lightSource;
 
-    [Header("Ray marching")]
     [Range(32, 256)] public int maxSteps = 96;
     [Min(0.1f)] public float maxDistance = 100f;
 
-    private static readonly int ParticleCountId = Shader.PropertyToID("_ParticleCount");
-    private static readonly int ParticlesId = Shader.PropertyToID("_FluidParticles");
-    private static readonly int RadiusId = Shader.PropertyToID("_ParticleRadius");
-    private static readonly int BlendId = Shader.PropertyToID("_BlendStrength");
-    private static readonly int ColorId = Shader.PropertyToID("_WaterColor");
-    private static readonly int AmbientId = Shader.PropertyToID("_AmbientLight");
-    private static readonly int BoundsMinId = Shader.PropertyToID("_FluidBoundsMin");
-    private static readonly int BoundsMaxId = Shader.PropertyToID("_FluidBoundsMax");
-    private static readonly int MaxStepsId = Shader.PropertyToID("_MaxSteps");
-    private static readonly int MaxDistanceId = Shader.PropertyToID("_MaxDistance");
-    private static readonly int CustomLightId = Shader.PropertyToID("_UseCustomLight");
-    private static readonly int LightDirectionId = Shader.PropertyToID("_FluidLightDirection");
-    private static readonly int LightColorId = Shader.PropertyToID("_FluidLightColor");
+    private Camera cam;
 
     private void OnEnable()
     {
         cam = GetComponent<Camera>();
-        RenderPipelineManager.beginCameraRendering += PrepareMaterial;
+        RenderPipelineManager.beginCameraRendering += PrepareMaterials;
     }
 
     private void OnDisable()
     {
-        RenderPipelineManager.beginCameraRendering -= PrepareMaterial;
+        RenderPipelineManager.beginCameraRendering -= PrepareMaterials;
 
-        if (fluidMaterial != null) fluidMaterial.SetInteger(ParticleCountId, 0);
+        if (fluids == null) return;
+
+        foreach (FluidLayer fluid in fluids)
+        {
+            if (fluid != null && fluid.fluidMaterial != null)
+            {
+                fluid.fluidMaterial.SetInteger("_ParticleCount", 0);
+            }
+        }
     }
 
-    private void PrepareMaterial(ScriptableRenderContext context, Camera renderingCamera)
+    private void PrepareMaterials(ScriptableRenderContext context, Camera renderingCamera)
     {
-        if (fluidMaterial == null) return;
+        if (fluids == null) return;
 
-        if (!Application.isPlaying || renderingCamera != cam || sph == null || !sph.isActiveAndEnabled || sph._particlesBuffer == null || !sph._particlesBuffer.IsValid())
+        foreach (FluidLayer fluid in fluids)
         {
-            fluidMaterial.SetInteger(ParticleCountId, 0);
-            return;
-        }
+            if (fluid == null || fluid.fluidMaterial == null) continue;
 
-        float radius = Mathf.Max(0.001f, viewRadius);
-        float blend = Mathf.Max(0f, blendStrength);
+            Material mat = fluid.fluidMaterial;
+            SPH sim = fluid.sph;
 
-        fluidMaterial.SetBuffer(ParticlesId, sph._particlesBuffer);
-        fluidMaterial.SetInteger(ParticleCountId, sph._particlesBuffer.count);
-        fluidMaterial.SetFloat(RadiusId, radius);
-        fluidMaterial.SetFloat(BlendId, blend);
-        fluidMaterial.SetColor(ColorId, waterColor);
-        fluidMaterial.SetColor(AmbientId, ambientLight);
-        fluidMaterial.SetInteger(MaxStepsId, Mathf.Clamp(maxSteps, 32, 256));
-        fluidMaterial.SetFloat(MaxDistanceId, Mathf.Max(0.1f, maxDistance));
+            if (!Application.isPlaying || renderingCamera != cam || sim == null || !sim.isActiveAndEnabled || !sim.IsReady)
+            {
+                mat.SetInteger("_ParticleCount", 0);
+                continue;
+            }
 
-        Vector3 spawnEnd = sph.spawnCenter + new Vector3(Mathf.Max(0, sph.numToSpawn.x - 1), Mathf.Max(0, sph.numToSpawn.y - 1), Mathf.Max(0, sph.numToSpawn.z - 1)) * (2f * sph.particleRadius);
-        float jitter = Mathf.Abs(sph.particleRadius * sph.spawnJitter);
+            mat.SetBuffer("_FluidParticles", sim._particlesBuffer);
+            mat.SetInteger("_ParticleCount", sim.ActiveParticleCount);
 
-        Vector3 boundsMin = Vector3.Min(-sph.boxSize * 0.5f, Vector3.Min(sph.spawnCenter, spawnEnd) - Vector3.one * jitter);
-        Vector3 boundsMax = Vector3.Max(sph.boxSize * 0.5f, Vector3.Max(sph.spawnCenter, spawnEnd) + Vector3.one * jitter);
-        Vector3 padding = Vector3.one * (radius + blend + 0.01f);
+            mat.SetFloat("_ParticleRadius", Mathf.Max(0.001f, fluid.viewRadius));
+            mat.SetFloat("_BlendStrength", Mathf.Max(0f, fluid.blendStrength));
+            mat.SetColor("_WaterColor", fluid.color);
+            mat.SetColor("_AmbientLight", ambientLight);
 
-        fluidMaterial.SetVector(BoundsMinId, boundsMin - padding);
-        fluidMaterial.SetVector(BoundsMaxId, boundsMax + padding);
+            mat.SetInteger("_MaxSteps", Mathf.Clamp(maxSteps, 32, 256));
+            mat.SetFloat("_MaxDistance", Mathf.Max(0.1f, maxDistance));
 
-        bool useCustomLight = lightSource != null && lightSource.isActiveAndEnabled;
-        fluidMaterial.SetFloat(CustomLightId, useCustomLight ? 1f : 0f);
+            Vector3 padding = Vector3.one * (Mathf.Max(0.001f, fluid.viewRadius) + Mathf.Max(0f, fluid.blendStrength) + 0.01f);
+            Bounds bounds = sim.SimulationBounds;
 
-        if (useCustomLight)
-        {
-            fluidMaterial.SetVector(LightDirectionId, -lightSource.transform.forward);
-            fluidMaterial.SetColor(LightColorId, lightSource.color * lightSource.intensity);
+            mat.SetVector("_FluidBoundsMin", bounds.min - padding);
+            mat.SetVector("_FluidBoundsMax", bounds.max + padding);
+
+            bool customLight = lightSource != null && lightSource.isActiveAndEnabled;
+            mat.SetFloat("_UseCustomLight", customLight ? 1f : 0f);
+
+            if (customLight)
+            {
+                mat.SetVector("_FluidLightDirection", -lightSource.transform.forward);
+                mat.SetColor("_FluidLightColor", lightSource.color * lightSource.intensity);
+            }
         }
     }
 }

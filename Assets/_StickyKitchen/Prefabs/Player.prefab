@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7806527642301125727}
   - component: {fileID: 8169945867612688375}
   - component: {fileID: 2877089001427551034}
+  - component: {fileID: 7478532764746554373}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -170,6 +171,33 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &7478532764746554373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456827689378539616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60f5bfabb5daea74bab2a0cb875bed34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FluidRayMarching
+  fluids:
+  - sph: {fileID: 0}
+    fluidMaterial: {fileID: 0}
+    color: {r: 0.02, g: 0.45, b: 0.85, a: 0.85}
+    viewRadius: 0.18
+    blendStrength: 0.5
+  - sph: {fileID: 0}
+    fluidMaterial: {fileID: 0}
+    color: {r: 0.02, g: 0.45, b: 0.85, a: 0.85}
+    viewRadius: 0.18
+    blendStrength: 0.5
+  ambientLight: {r: 0.2, g: 0.25, b: 0.3, a: 1}
+  lightSource: {fileID: 0}
+  maxSteps: 96
+  maxDistance: 100
 --- !u!1 &754237954485248896
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,6 +478,7 @@ Transform:
   - {fileID: 8024570166563385586}
   - {fileID: 7461502779063075777}
   - {fileID: 5103867939447165320}
+  - {fileID: 2023669181055050957}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &3800218157857547641
@@ -561,6 +590,7 @@ MonoBehaviour:
   minFillValue: -1
   maxFillValue: 1
   currentFluid: 0
+  fluidImpactEmitter: {fileID: 0}
 --- !u!114 &742656587701085430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -785,6 +815,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5318417246912754925, guid: c6e0c1f1acbd87740ba3c9328b472a45, type: 3}
   m_PrefabInstance: {fileID: 1340884749079355501}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1990376735908840230
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6564670794566365176}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.23000257
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.8315499
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.6681716
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+      propertyPath: m_Name
+      value: FoxRiffleIdle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+--- !u!4 &2023669181055050957 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+  m_PrefabInstance: {fileID: 1990376735908840230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8341208143589488689
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -992,8 +1084,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6c12e10744468414193228cd1383ad5b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6522941197359590184}
   m_SourcePrefab: {fileID: 100100000, guid: 6c12e10744468414193228cd1383ad5b, type: 3}
+--- !u!1 &8375103576544258851 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6c12e10744468414193228cd1383ad5b, type: 3}
+  m_PrefabInstance: {fileID: 8717615953171125874}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &6522941197359590184
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8375103576544258851}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9ff3b3fdd412439459ad0a606967ebf5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &9183271718208565657 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6c12e10744468414193228cd1383ad5b, type: 3}
