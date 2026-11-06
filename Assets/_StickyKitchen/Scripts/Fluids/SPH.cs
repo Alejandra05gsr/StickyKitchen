@@ -75,6 +75,8 @@ public class SPH : MonoBehaviour
 
         SpawnParticlesInBox(); // Spawn Particles
 
+        if (material != null) material.enableInstancing = true;
+
         // Setup Args for Instanced Particle Rendering
         uint[] args = {
             particleMesh.GetIndexCount(0),
@@ -126,16 +128,16 @@ public class SPH : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         shader.SetVector("boxSize", boxSize);
         shader.SetFloat("timestep", timestep);
         shader.SetVector("spherePos", collisionSphere.transform.position);
         shader.SetFloat("sphereRadius", collisionSphere.transform.localScale.x / 2);
 
-        // Total Particles has to be divisible by 100 
-        shader.Dispatch(densityPressureKernel, totalParticles / 100, 1, 1); // 1. Compute Density/Pressure for each particle
-        shader.Dispatch(computeForceKernel, totalParticles / 100, 1, 1); // 2. Use Density/Pressure to calculate forces
-        shader.Dispatch(integrateKernel, totalParticles / 100, 1, 1); // 3. Use forces to move particles
+        int threadGroups = Mathf.CeilToInt(totalParticles / 100f);
+
+        shader.Dispatch(densityPressureKernel, threadGroups, 1, 1);
+        shader.Dispatch(computeForceKernel, threadGroups, 1, 1);
+        shader.Dispatch(integrateKernel, threadGroups, 1, 1);
     }
 
 
@@ -172,7 +174,7 @@ public class SPH : MonoBehaviour
     }
 
 
-    private static readonly int SizeProperty = Shader.PropertyToID("_size");
+    private static readonly int SizeProperty = Shader.PropertyToID("_Size");
     private static readonly int ParticlesBufferProperty = Shader.PropertyToID("_particlesBuffer");
 
     private void Update()
@@ -196,5 +198,14 @@ public class SPH : MonoBehaviour
     }
 
 
+
+    private void OnDestroy()
+    {
+        _argsBuffer?.Release();
+        _particlesBuffer?.Release();
+
+        _argsBuffer = null;
+        _particlesBuffer = null;
+    }
 
 }

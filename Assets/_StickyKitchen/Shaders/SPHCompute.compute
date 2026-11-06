@@ -47,6 +47,9 @@ float StdKernel(float distanceSquared)
 [numthreads(100, 1, 1)]
 void ComputeDensityPressure(uint3 id : SV_DISPATCHTHREADID)
 {
+    if (id.x >= (uint) particleLength)
+        return;
+    
     
     float3 origin = _particles[id.x].position;
     float sum = 0;
@@ -103,6 +106,9 @@ float sphereRadius;
 [numthreads(100, 1, 1)]
 void ComputeForces(uint3 id : SV_DISPATCHTHREADID)
 {
+    if (id.x >= (uint) particleLength)
+        return;
+    
     float3 origin = _particles[id.x].position;
     float density2 = _particles[id.x].density * _particles[id.x].density;
     float3 pressure = float3(0, 0, 0);
@@ -143,6 +149,10 @@ void ComputeForces(uint3 id : SV_DISPATCHTHREADID)
 [numthreads(100, 1, 1)]
 void Integrate(uint3 id : SV_DISPATCHTHREADID)
 {
+    
+    if (id.x >= (uint) particleLength)
+        return;
+    
     // _particles[id.x].velocity += timestep * _particles[id.x].
     float3 topRight = boxSize / 2;
     float3 bottomLeft = -boxSize / 2;
