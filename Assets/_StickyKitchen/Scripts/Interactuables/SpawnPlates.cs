@@ -28,5 +28,15 @@ public class SpawnPlates : MonoBehaviour
         }
     }
 
+    public void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.gameObject.name + " ha colisionado con el botón");
 
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Syrup")) //&& canInteract
+        {
+            SpawningPlates();
+
+        }
+
+    }
 }

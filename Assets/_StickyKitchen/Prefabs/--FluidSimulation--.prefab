@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3010985668503982847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6474513995653472787}
+  - component: {fileID: 1499094100888948072}
+  m_Layer: 0
+  m_Name: SPH Syrup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6474513995653472787
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3010985668503982847}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.41616, y: 0.5, z: -5.74209}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2912427230913253063}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1499094100888948072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3010985668503982847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cdd523c065236b4f853f3d208ceff8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SPH
+  maxParticles: 256
+  startWithParticles: 0
+  numToSpawn: {x: 5, y: 5, z: 5}
+  spawnCenter: {x: 0, y: 3.85, z: 0}
+  boxCenter: {x: 0, y: 62, z: 0}
+  boxSize: {x: 105.2, y: 122.9, z: 116.9}
+  particleRadius: 0.1
+  collisionSphere: {fileID: 0}
+  showSpheres: 0
+  particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 496bcb237388d8548a3883473cc53043, type: 2}
+  particleRenderSize: 0.1
+  shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
+  boundDamping: 0
+  viscosity: 0.2
+  particleMass: 8
+  gasConstant: 20
+  restingDensity: 1000
+  timestep: 0.004
+  smoothingRadius: 0.35
+  cohesionRadius: 0.6
+  cohesionStrength: 24
+  linearDamping: 0.25
+  groundFriction: 4
+  maxAcceleration: 100
+--- !u!1 &6482410203119000859
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8463612270756628123}
+  - component: {fileID: 5450776672095370922}
+  m_Layer: 0
+  m_Name: SPH Water
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8463612270756628123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6482410203119000859}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.41616, y: 0.5, z: -5.74209}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2912427230913253063}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5450776672095370922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6482410203119000859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cdd523c065236b4f853f3d208ceff8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SPH
+  maxParticles: 256
+  startWithParticles: 0
+  numToSpawn: {x: 5, y: 5, z: 5}
+  spawnCenter: {x: 0, y: 3.85, z: 0}
+  boxCenter: {x: 0, y: 62, z: 0}
+  boxSize: {x: 105.2, y: 122.9, z: 116.9}
+  particleRadius: 0.1
+  collisionSphere: {fileID: 0}
+  showSpheres: 0
+  particleMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 496bcb237388d8548a3883473cc53043, type: 2}
+  particleRenderSize: 0.1
+  shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
+  boundDamping: 0
+  viscosity: 0.08
+  particleMass: 8
+  gasConstant: 20
+  restingDensity: 1000
+  timestep: 0.004
+  smoothingRadius: 0.35
+  cohesionRadius: 0.6
+  cohesionStrength: 24
+  linearDamping: 0.25
+  groundFriction: 4
+  maxAcceleration: 100
+--- !u!1 &7011228546720022007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3221711882148396240}
+  - component: {fileID: 3913404600333110020}
+  m_Layer: 0
+  m_Name: Fluid Impact System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3221711882148396240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7011228546720022007}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.73498, y: -7.58, z: -3.6393}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2912427230913253063}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3913404600333110020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7011228546720022007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a12e61679eb1e34b953d8c959378cba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FluidImpactEmitter
+  waterSimulation: {fileID: 5450776672095370922}
+  syrupSimulation: {fileID: 1499094100888948072}
+  particlesPerImpact: 27
+  surfaceSpeed: 1
+  outwardSpeed: 0.5
+--- !u!1 &8772047499349622614
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2912427230913253063}
+  m_Layer: 0
+  m_Name: --FluidSimulation--
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2912427230913253063
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8772047499349622614}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8463612270756628123}
+  - {fileID: 6474513995653472787}
+  - {fileID: 3221711882148396240}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
