@@ -35,12 +35,23 @@ public class SPH : MonoBehaviour
 
     [Header("Simulacion")]
     public ComputeShader shader;
-    public float boundDamping = -0.3f;
-    public float viscosity = -0.003f;
-    public float particleMass = 1f;
-    public float gasConstant = 2f;
-    public float restingDensity = 1f;
-    public float timestep = 0.001f;
+
+    [Range(0f, 1f)] public float boundDamping = 0f;
+    [Min(0f)] public float viscosity = 0.08f;
+    [Min(0.0001f)] public float particleMass = 8f;
+    [Min(0f)] public float gasConstant = 20f;
+    [Min(0.0001f)] public float restingDensity = 1000f;
+    [Min(0.0001f)] public float timestep = 0.004f;
+
+    [Header("Vecindad y cohesion")]
+    [Min(0.001f)] public float smoothingRadius = 0.35f;
+    [Min(0.001f)] public float cohesionRadius = 0.6f;
+    [Min(0f)] public float cohesionStrength = 24f;
+
+    [Header("Estabilizacion")]
+    [Min(0f)] public float linearDamping = 0.25f;
+    [Min(0f)] public float groundFriction = 4f;
+    [Min(1f)] public float maxAcceleration = 100f;
 
     public ComputeBuffer _particlesBuffer;
     public int ActiveParticleCount { get; private set; }
@@ -175,22 +186,32 @@ public class SPH : MonoBehaviour
         if (!IsReady || ActiveParticleCount == 0) return;
 
         float radius = Mathf.Max(0.001f, particleRadius);
+        float h = Mathf.Max(radius * 2.1f, smoothingRadius);
+
+        float frameTime = Time.fixedDeltaTime;
+        int substeps = Mathf.Clamp(Mathf.CeilToInt(frameTime / Mathf.Max(0.0001f, timestep)), 1, 16);
 
         runtimeShader.SetInt("particleLength", ActiveParticleCount);
+
         runtimeShader.SetFloat("particleMass", Mathf.Max(0.0001f, particleMass));
-        runtimeShader.SetFloat("viscosity", viscosity);
-        runtimeShader.SetFloat("gasConstant", gasConstant);
-        runtimeShader.SetFloat("restDensity", restingDensity);
+        runtimeShader.SetFloat("viscosity", Mathf.Max(0f, viscosity));
+        runtimeShader.SetFloat("gasConstant", Mathf.Max(0f, gasConstant));
+        runtimeShader.SetFloat("restDensity", Mathf.Max(0.0001f, restingDensity));
+
         runtimeShader.SetFloat("boundDamping", boundDamping);
-        runtimeShader.SetFloat("pi", Mathf.PI);
-
         runtimeShader.SetFloat("radius", radius);
-        runtimeShader.SetFloat("radius2", radius * radius);
-        runtimeShader.SetFloat("radius3", Mathf.Pow(radius, 3));
-        runtimeShader.SetFloat("radius4", Mathf.Pow(radius, 4));
-        runtimeShader.SetFloat("radius5", Mathf.Pow(radius, 5));
+        runtimeShader.SetFloat("smoothingRadius", h);
 
-        runtimeShader.SetFloat("timestep", timestep);
+        runtimeShader.SetFloat("cohesionRadius", Mathf.Max(h, cohesionRadius));
+        runtimeShader.SetFloat("cohesionStrength", Mathf.Max(0f, cohesionStrength));
+
+        runtimeShader.SetFloat("linearDamping", Mathf.Max(0f, linearDamping));
+        runtimeShader.SetFloat("groundFriction", Mathf.Max(0f, groundFriction));
+        runtimeShader.SetFloat("maxAcceleration", Mathf.Max(1f, maxAcceleration));
+
+        runtimeShader.SetFloat("timestep", frameTime / substeps);
+        runtimeShader.SetVector("gravity", Physics.gravity);
+
         runtimeShader.SetVector("boxCenter", boxCenter);
         runtimeShader.SetVector("boxSize", boxSize);
 
@@ -199,10 +220,14 @@ public class SPH : MonoBehaviour
 
         int groups = Mathf.CeilToInt(ActiveParticleCount / 100f);
 
-        runtimeShader.Dispatch(densityKernel, groups, 1, 1);
-        runtimeShader.Dispatch(forceKernel, groups, 1, 1);
-        runtimeShader.Dispatch(integrateKernel, groups, 1, 1);
+        for (int step = 0; step < substeps; step++)
+        {
+            runtimeShader.Dispatch(densityKernel, groups, 1, 1);
+            runtimeShader.Dispatch(forceKernel, groups, 1, 1);
+            runtimeShader.Dispatch(integrateKernel, groups, 1, 1);
+        }
     }
+
 
     private void Update()
     {

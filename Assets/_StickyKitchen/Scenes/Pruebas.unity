@@ -990,6 +990,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 4071ac55f3bdba943bb7124d3dc9ac0a, type: 2}
+    - target: {fileID: 6522941197359590184, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
     - target: {fileID: 6564670794566365176, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -1102,6 +1106,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9193637442441595451, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1480357439}
     - targetCorrespondingSourceObject: {fileID: 1757628069878823053, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1833866219}
@@ -1922,7 +1929,7 @@ MonoBehaviour:
   startWithParticles: 0
   numToSpawn: {x: 5, y: 5, z: 5}
   spawnCenter: {x: 0, y: 3.85, z: 0}
-  boxCenter: {x: 0, y: 0, z: 0}
+  boxCenter: {x: 0, y: 0.42, z: 0}
   boxSize: {x: 50, y: 16, z: 50}
   particleRadius: 0.1
   collisionSphere: {fileID: 1480357433}
@@ -1931,12 +1938,18 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 496bcb237388d8548a3883473cc53043, type: 2}
   particleRenderSize: 0.1
   shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
-  boundDamping: -0.3
-  viscosity: -0.01
-  particleMass: 1
-  gasConstant: 2
-  restingDensity: 1
-  timestep: 0.001
+  boundDamping: 0
+  viscosity: 0.2
+  particleMass: 8
+  gasConstant: 20
+  restingDensity: 1000
+  timestep: 0.004
+  smoothingRadius: 0.35
+  cohesionRadius: 0.6
+  cohesionStrength: 24
+  linearDamping: 0.25
+  groundFriction: 4
+  maxAcceleration: 100
 --- !u!4 &1092083169
 Transform:
   m_ObjectHideFlags: 0
@@ -1952,6 +1965,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1107767499 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9193637442441595451, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
+  m_PrefabInstance: {fileID: 514151886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1173099099
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,7 +2766,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5695285831137214617, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
   m_PrefabInstance: {fileID: 514151886}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1107767499}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9c1a106053120145890f65878da98a9, type: 3}
@@ -2759,6 +2777,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6564670794566365176, guid: f58cd24315cbbea4991e4c525d81672a, type: 3}
   m_PrefabInstance: {fileID: 514151886}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1480357439
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107767499}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 049118a9d901da94eb876b2a9492910f, type: 3}
+  m_Controller: {fileID: 9100000, guid: 9ff3b3fdd412439459ad0a606967ebf5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1497570444
 GameObject:
   m_ObjectHideFlags: 0
@@ -3425,7 +3465,7 @@ MonoBehaviour:
   startWithParticles: 0
   numToSpawn: {x: 5, y: 5, z: 5}
   spawnCenter: {x: 0, y: 3.85, z: 0}
-  boxCenter: {x: 0, y: 0, z: 0}
+  boxCenter: {x: 0, y: 0.42, z: 0}
   boxSize: {x: 50, y: 16, z: 50}
   particleRadius: 0.1
   collisionSphere: {fileID: 1480357433}
@@ -3434,12 +3474,18 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 496bcb237388d8548a3883473cc53043, type: 2}
   particleRenderSize: 0.1
   shader: {fileID: 7200000, guid: b2c0eb6d7b6551243a15f497a41d850b, type: 3}
-  boundDamping: -0.3
-  viscosity: -0.01
-  particleMass: 1
-  gasConstant: 2
-  restingDensity: 1
-  timestep: 0.001
+  boundDamping: 0
+  viscosity: 0.08
+  particleMass: 8
+  gasConstant: 20
+  restingDensity: 1000
+  timestep: 0.004
+  smoothingRadius: 0.35
+  cohesionRadius: 0.6
+  cohesionStrength: 24
+  linearDamping: 0.25
+  groundFriction: 4
+  maxAcceleration: 100
 --- !u!4 &1881931652
 Transform:
   m_ObjectHideFlags: 0

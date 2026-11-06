@@ -13,196 +13,198 @@ struct Particle
 
 RWStructuredBuffer<Particle> _particles;
 
-float particleMass = 2.0;
-float viscosity = 200;
-float gasConstant = 2000;
-float restDensity = 300;
-float boundDamping = -0.5;
-float radius = 2;
-float radius3 = 8;
-float radius2 = 4;
-float radius4 = 16;
-float radius5 = 32;
-float pi = 3.1415926535897932384626433832795028841971;
-
 int particleLength;
 
-// Pre-computed
-float densityWeightConstant = 0.00497359197162172924277761760539;
-float spikyGradient = -0.09947183943243458485555235210782;
-float viscLaplacian = 0.39788735772973833942220940843129;
+float particleMass;
+float viscosity;
+float gasConstant;
+float restDensity;
+float boundDamping;
 
-float timestep = 1;
+float radius;
+float smoothingRadius;
+float cohesionRadius;
+float cohesionStrength;
 
-float3 boxSize;
+float linearDamping;
+float groundFriction;
+float maxAcceleration;
+float timestep;
+
+float3 gravity;
 float3 boxCenter;
-
-float StdKernel(float distanceSquared)
-{
-    // Doyub Kim
-    float x = 1.0f - distanceSquared / radius2;
-    return 315.f / (64.f * pi * radius3) * x * x * x;
-}
-
-
-[numthreads(100, 1, 1)]
-void ComputeDensityPressure(uint3 id : SV_DISPATCHTHREADID)
-{
-    if (id.x >= (uint) particleLength)
-        return;
-    
-    
-    float3 origin = _particles[id.x].position;
-    float sum = 0;
-   
-    for (int i = 0; i < particleLength; i++)
-    {
-    
-        // if (origin.x == _particles[i].position.x && origin.y == _particles[i].position.y && origin.z == _particles[i].position.z) {
-        //     continue;
-        // }
-
-        float3 diff = origin - _particles[i].position;
-        float distanceSquared = dot(diff, diff);
-        
-        if (radius2 * 0.004 > distanceSquared * 0.004)
-        {
-            float x = (radius2 * 0.004) - (distanceSquared * 0.004);
-            sum += StdKernel(distanceSquared * 0.004);
-        }
-    }
-   
-    _particles[id.x].density = sum * particleMass + 0.000001f;
-    _particles[id.x].pressure = gasConstant * (_particles[id.x].density - restDensity);
-
-    if (_particles[id.x].pressure <= 0)
-        _particles[id.x].pressure = 0;
-}
-
-
-// Doyub Kim page 130
-float SpikyKernelFirstDerivative(float distance)
-{
-    float x = 1.0f - distance / radius;
-    return -45.0f / (pi * radius4) * x * x;
-}
-
-// Doyub Kim page 130
-float SpikyKernelSecondDerivative(float distance)
-{
-    // Btw, it derives 'distance' not 'radius' (h)
-    float x = 1.0f - distance / radius;
-    return 90.f / (pi * radius5) * x;
-}
-
-
-float3 SpikyKernelGradient(float distance, float3 directionFromCenter)
-{
-    return SpikyKernelFirstDerivative(distance) * directionFromCenter;
-}
-
+float3 boxSize;
 float3 spherePos;
 float sphereRadius;
 
+static const float PI = 3.14159265359;
+
 [numthreads(100, 1, 1)]
-void ComputeForces(uint3 id : SV_DISPATCHTHREADID)
+void ComputeDensityPressure(uint3 id : SV_DispatchThreadID)
 {
     if (id.x >= (uint) particleLength)
         return;
-    
-    float3 origin = _particles[id.x].position;
-    float density2 = _particles[id.x].density * _particles[id.x].density;
-    float3 pressure = float3(0, 0, 0);
-    float3 visc = float3(0, 0, 0);
-    float mass2 = particleMass * particleMass;
 
-    for (int i = 0; i < particleLength; i++)
+    float h = smoothingRadius;
+    float h2 = h * h;
+    float h3 = h2 * h;
+
+    float density = 0;
+    float3 position = _particles[id.x].position;
+
+    for (int j = 0; j < particleLength; j++)
     {
-        
-        if (origin.x == _particles[i].position.x && origin.y == _particles[i].position.y && origin.z == _particles[i].position.z)
-        {
+        float3 delta = position - _particles[j].position;
+        float distanceSquared = dot(delta, delta);
+
+        if (distanceSquared >= h2)
             continue;
-        }
 
-        float dist = distance(_particles[i].position, origin);
-        if (dist < radius * 2)
-        {
-            float3 pressureGradientDirection = normalize(_particles[id.x].position - _particles[i].position);
-            pressure += mass2 * (_particles[id.x].pressure / density2 + _particles[i].pressure / (_particles[i].density * _particles[i].density)) * SpikyKernelGradient(dist, pressureGradientDirection); // Kim
-            visc += viscosity * mass2 * (_particles[i].velocity - _particles[id.x].velocity) / _particles[i].density * SpikyKernelSecondDerivative(dist);
-        }
+        float q = 1.0 - distanceSquared / h2;
+        density += particleMass * 315.0 / (64.0 * PI * h3) * q * q * q;
     }
 
-    _particles[id.x].currentForce = float3(0, (-9.81 * particleMass), 0) - pressure + visc;
+    density = max(density, 0.000001);
 
-    // Handle Collision
-
-    float3 colDir = _particles[id.x].position - spherePos;
-    if (length(colDir) > 0.00001f && length(colDir) < sphereRadius)
-    {
-        float mag = sphereRadius / length(colDir);
-        _particles[id.x].currentForce += colDir * 300 * mag;
-    }
-
-    // + pressure + visc/_particles[id.x].density;
+    _particles[id.x].density = density;
+    _particles[id.x].pressure = gasConstant * max(density - restDensity, 0.0);
 }
 
 [numthreads(100, 1, 1)]
-void Integrate(uint3 id : SV_DISPATCHTHREADID)
+void ComputeForces(uint3 id : SV_DispatchThreadID)
 {
-    
     if (id.x >= (uint) particleLength)
         return;
-    
-    // _particles[id.x].velocity += timestep * _particles[id.x].
-    float3 topRight = boxCenter + boxSize / 2;
-    float3 bottomLeft = boxCenter - boxSize / 2;
 
-    float3 vel = _particles[id.x].velocity + ((_particles[id.x].currentForce / particleMass) * timestep);
-    _particles[id.x].position += vel * timestep;
+    Particle current = _particles[id.x];
 
-    
+    float h = smoothingRadius;
+    float h2 = h * h;
+    float h4 = h2 * h2;
+    float h5 = h4 * h;
 
-    // Minimum Enforcements
+    float densityI = max(current.density, 0.000001);
+    float3 acceleration = gravity;
 
-    if (_particles[id.x].position.x - radius < bottomLeft.x)
+    for (int j = 0; j < particleLength; j++)
     {
-        vel.x *= boundDamping;
-        _particles[id.x].position.x = bottomLeft.x + radius;
+        if (j == (int) id.x)
+            continue;
+
+        Particle other = _particles[j];
+
+        float3 delta = current.position - other.position;
+        float distanceSquared = dot(delta, delta);
+
+        if (distanceSquared <= 0.0000000001)
+            continue;
+
+        float distanceToOther = sqrt(distanceSquared);
+        float3 direction = delta / distanceToOther;
+
+        // Presion y viscosidad dentro del mismo soporte.
+        if (distanceToOther < h)
+        {
+            float q = 1.0 - distanceToOther / h;
+            float densityJ = max(other.density, 0.000001);
+
+            float gradient = -45.0 / (PI * h4) * q * q;
+            float pressureTerm = current.pressure / (densityI * densityI) + other.pressure / (densityJ * densityJ);
+
+            acceleration -= particleMass * pressureTerm * gradient * direction;
+
+            float laplacian = 45.0 / (PI * h5) * q;
+            acceleration += viscosity * particleMass / densityJ * (other.velocity - current.velocity) * laplacian;
+        }
+
+        // Atraccion local aproximada para conservar el charco.
+        // Deja de atraer cuando las particulas ya estan suficientemente cerca.
+        if (distanceToOther < cohesionRadius)
+        {
+            float q = 1.0 - distanceToOther / cohesionRadius;
+            float stretch = max(distanceToOther - radius * 2.0, 0.0) / cohesionRadius;
+
+            acceleration -= cohesionStrength * q * q * stretch * direction;
+        }
     }
 
-    if (_particles[id.x].position.y - radius < bottomLeft.y)
+    float accelerationLength = length(acceleration);
+
+    if (accelerationLength > maxAcceleration)
     {
-        vel.y *= boundDamping;
-        _particles[id.x].position.y = bottomLeft.y + radius;
+        acceleration *= maxAcceleration / accelerationLength;
     }
 
-    if (_particles[id.x].position.z - radius < bottomLeft.z)
+    _particles[id.x].currentForce = acceleration * particleMass;
+}
+
+void ResolveAxis(inout float position, inout float velocity, float minimum, float maximum, float bounce)
+{
+    if (position < minimum)
     {
-        vel.z *= boundDamping;
-        _particles[id.x].position.z = bottomLeft.z + radius;
+        position = minimum;
+
+        if (velocity < 0)
+            velocity = -velocity * bounce;
     }
 
-    // Maximum Enforcements
-
-    if (_particles[id.x].position.x + radius > topRight.x)
+    if (position > maximum)
     {
-        vel.x *= boundDamping;
-        _particles[id.x].position.x = topRight.x - radius;
+        position = maximum;
+
+        if (velocity > 0)
+            velocity = -velocity * bounce;
+    }
+}
+
+[numthreads(100, 1, 1)]
+void Integrate(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint) particleLength)
+        return;
+
+    Particle particle = _particles[id.x];
+
+    float3 velocity = particle.velocity + particle.currentForce / particleMass * timestep;
+    velocity *= exp(-linearDamping * timestep);
+
+    float3 position = particle.position + velocity * timestep;
+
+    float bounce = saturate(abs(boundDamping));
+    float3 minimum = boxCenter - boxSize * 0.5 + radius;
+    float3 maximum = boxCenter + boxSize * 0.5 - radius;
+
+    if (sphereRadius > 0)
+    {
+        float3 delta = position - spherePos;
+        float distanceToSphere = length(delta);
+        float contactRadius = sphereRadius + radius;
+
+        if (distanceToSphere < contactRadius)
+        {
+            float3 normal = distanceToSphere > 0.00001 ? delta / distanceToSphere : float3(0, 1, 0);
+
+            position = spherePos + normal * contactRadius;
+
+            float inwardSpeed = dot(velocity, normal);
+
+            if (inwardSpeed < 0)
+            {
+                velocity -= normal * inwardSpeed * (1.0 + bounce);
+            }
+        }
     }
 
-    if (_particles[id.x].position.y + radius > topRight.y)
+    ResolveAxis(position.x, velocity.x, minimum.x, maximum.x, bounce);
+    ResolveAxis(position.y, velocity.y, minimum.y, maximum.y, bounce);
+    ResolveAxis(position.z, velocity.z, minimum.z, maximum.z, bounce);
+
+    // Frenado tangencial al descansar sobre la base.
+    if (position.y <= minimum.y + 0.0001)
     {
-        vel.y *= boundDamping;
-        _particles[id.x].position.y = topRight.y - radius;
+        velocity.xz *= exp(-groundFriction * timestep);
     }
 
-    if (_particles[id.x].position.z + radius > topRight.z)
-    {
-        vel.z *= boundDamping;
-        _particles[id.x].position.z = topRight.z - radius;
-    }
-
-    
-    _particles[id.x].velocity = vel;
+    _particles[id.x].position = position;
+    _particles[id.x].velocity = velocity;
 }
