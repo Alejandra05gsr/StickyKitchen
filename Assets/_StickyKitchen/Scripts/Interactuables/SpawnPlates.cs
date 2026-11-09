@@ -39,4 +39,15 @@ public class SpawnPlates : MonoBehaviour
         }
 
     }
+
+
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.gameObject.name + " ha colisionado con el botón");
+        if (other.CompareTag("Interactuable"))
+        {
+            SpawningPlates();
+        }
+    }
+
 }

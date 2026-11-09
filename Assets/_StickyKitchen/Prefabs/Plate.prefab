@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 8708531189227241372}
   - component: {fileID: 3482482970519839585}
   - component: {fileID: 2705543956464729750}
-  m_Layer: 0
+  - component: {fileID: 8853563853242556568}
+  m_Layer: 11
   m_Name: Plate
-  m_TagString: Untagged
+  m_TagString: Plate
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -140,3 +141,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &8853563853242556568
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4358166188329212549}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.26481837, y: 0.1559258, z: 0.30323783}
+  m_Center: {x: -0.0061476966, y: 0.0046520326, z: 0.00925982}

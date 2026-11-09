@@ -527,10 +527,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.66921806
+  m_Radius: 0.68477
   m_Height: 2.633516
   m_Direction: 1
-  m_Center: {x: -0.26747322, y: 1.68457, z: 0}
+  m_Center: {x: -0.39261472, y: 1.68457, z: 0.27716458}
 --- !u!114 &462438424576178581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,31 +899,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.8
+      value: 0.78
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.036
+      value: 2.49
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.34
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9995081
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.03136444
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -931,7 +931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -3.595
       objectReference: {fileID: 0}
     - target: {fileID: 1462959191740791792, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -945,9 +945,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tanque
       objectReference: {fileID: 0}
+    - target: {fileID: 2225000058930075597, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 2225000058930075597, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.73
+      objectReference: {fileID: 0}
     - target: {fileID: 2859694555350480329, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
       propertyPath: m_Name
       value: Syrup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5908354395916290021, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5908354395916290021, guid: 2fae2b4bc589a624c89679f3582bbea5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.03
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

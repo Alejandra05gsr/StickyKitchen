@@ -23,7 +23,7 @@ public class Button : MonoBehaviour
     {
         Debug.Log(collision.gameObject.name + " ha colisionado con el botón");
 
-        if (collision.gameObject.CompareTag ("Player") || collision.gameObject.CompareTag ("Syrup")) //&& canInteract
+        if (collision.gameObject.CompareTag ("Player") || collision.gameObject.CompareTag ("Interactuable")) //&& canInteract
         {
             //Realizar la acción mover
             //Por cada objeto en el array de objetos a mover, llamar al método StartMoving() del script ObjectMove
@@ -46,5 +46,19 @@ public class Button : MonoBehaviour
 
     //Podría guardar como hijos en una lista los disparos de jarabes para que si tiene 3 o más
     //entonces se desactive el canInteract
+
+
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.gameObject.name + " ha colisionado con el botón");
+
+        if (other.CompareTag("Interactuable"))
+        {
+            foreach (GameObject obj in objectMove)
+            {
+                obj.GetComponent<ObjectMove>().StartMoving();
+            }
+        }
+    }
 
 }

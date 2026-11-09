@@ -31,12 +31,15 @@ public class Shoot : MonoBehaviour
     [SerializeField] private int maxWaterAmmo = 10;
     private float currentWaterShader;
     [SerializeField] public float maxWaterShader = 1f;
+    public GameObject prefabInteractuableWater;
 
     [Header("Syrup Ammo")]
     private int currentSyrupAmmo;
     [SerializeField] private int maxSyrupAmmo = 10;
     private float currentSyrupShader;
     [SerializeField] public float maxSyrupShader = 1f;
+    public GameObject prefabInteractuableSyrup;
+    
 
     [Header("Shader Range Adjustments")]
     [SerializeField] private float minFillValue = -1f;
@@ -119,11 +122,12 @@ public class Shoot : MonoBehaviour
                 //Debug.Log("Desaparece Jarabe");
             }
 
-            // 2. Seleccionar prefabs
+            //Seleccionar prefabs
             GameObject projectileToInstantiate = (currentFluid == FluidType.Water) ? waterProjectilePrefab : syrupProjectilePrefab;
             GameObject meshToInstantiate = (currentFluid == FluidType.Water) ? waterPrefab : syrupPrefab;
+            Instantiate(prefabInteractuableSyrup, hit.point, Quaternion.identity);
 
-            // 3. ¡INSTANTÁNEO! Crear el charco y pegarlo al mueble INMEDIATAMENTE
+
             SpawnFluidMeshInstantly(meshToInstantiate, hit);
 
             if (fluidImpactEmitter != null)
@@ -136,7 +140,7 @@ public class Shoot : MonoBehaviour
                 Debug.LogWarning("Asigna Fluid Impact Emitter en Shoot.", this);
             }
 
-            // 4. (Opcional) Instanciar la bala voladora solo como efecto estético
+            //Instanciar la bala solo como efecto estético
             if (projectileToInstantiate != null)
             {
                 CreateVisualFXProjectile(projectileToInstantiate, hit.point);
@@ -145,12 +149,11 @@ public class Shoot : MonoBehaviour
             ConsumeAmmo();
         }
     }
-    // Método que pega el charco AL INSTANTE en el mueble
+
     private void SpawnFluidMeshInstantly(GameObject meshPrefab, RaycastHit hit)
     {
         if (meshPrefab == null) return;
 
-        // Si es agua, limpiar jarabes cercanos de inmediato
         if (currentFluid == FluidType.Water)
         {
             Collider[] hitColliders = Physics.OverlapSphere(hit.point, 0.5f);
