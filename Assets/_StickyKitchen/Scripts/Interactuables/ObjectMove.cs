@@ -20,6 +20,9 @@ public class ObjectMove : MonoBehaviour
     private float countingTimeRotating = 0;
 
 
+    public GameObject interactuable;
+
+
     void Start()
     {
         moveSpeed *= -1;
@@ -42,6 +45,7 @@ public class ObjectMove : MonoBehaviour
         if (countingTimeMoving <= 0f)
         {
             countingTimeMoving = 0f;
+            interactuable.gameObject.GetComponent<StuckInteractuable>().MaterialTurnOff();
             isMoving = false;
         }
     }

@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 1267803103546327089}
   - component: {fileID: 7525517548021935888}
   - component: {fileID: 29499788124917717}
+  - component: {fileID: 5249084446409506603}
   m_Layer: 15
   m_Name: Sphere
   m_TagString: Untagged
@@ -296,6 +297,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5249084446409506603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570265403785223380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864547e11c669ac41a73a7ea731433a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StuckInteractuable
+  offMat: {fileID: 2100000, guid: 9aee4e0d4bc6e0b4e9021134b0da4678, type: 2}
+  onMat: {fileID: 2100000, guid: 4617a3ff0cec70e4b8612beab9e26f08, type: 2}
+  stuckMat1: {fileID: 2100000, guid: 77f7cb6fee3c00e4f91542e1bb88ccbf, type: 2}
+  stuckMat2: {fileID: 2100000, guid: 4d6e12b001a0e37438fcfdd3cbce79e9, type: 2}
 --- !u!1 &5018715490571324800
 GameObject:
   m_ObjectHideFlags: 0
