@@ -585,8 +585,10 @@ MonoBehaviour:
   syrupShader: {fileID: 6083872263788531192}
   maxWaterAmmo: 10
   maxWaterShader: 1
+  prefabInteractuableWater: {fileID: 0}
   maxSyrupAmmo: 10
   maxSyrupShader: 1
+  prefabInteractuableSyrup: {fileID: 0}
   minFillValue: -1
   maxFillValue: 1
   currentFluid: 0
