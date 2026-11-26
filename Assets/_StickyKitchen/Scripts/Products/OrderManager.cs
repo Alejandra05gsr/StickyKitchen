@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Va a spawnear las recetas y va a manejar la lista de pedidos activos.
+
 public class OrderManager : MonoBehaviour
 {
     [Header("Recetas Configuradas")]

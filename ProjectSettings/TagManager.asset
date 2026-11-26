@@ -22,6 +22,9 @@ TagManager:
   - FillSyrup
   - Plate
   - Food
+  - OrderMuffin
+  - OrderCookies
+  - DeliverZone
   layers:
   - Default
   - TransparentFX

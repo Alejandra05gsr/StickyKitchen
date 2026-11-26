@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class StuckInteractuable : MonoBehaviour
 {
@@ -34,13 +35,17 @@ public class StuckInteractuable : MonoBehaviour
         GetComponent<Renderer>().material = onMat;
     }
 
-    public void Changematerial(int start)
+
+    public void Changematerial()
     {
-        typeMaterial = start;
+
+
+       
         switch (typeMaterial)
         {
             case 2:
                 GetComponent<Renderer>().material = stuckMat1;
+                //Espera
                 typeMaterial = 3;
                 break;
             case 3:

@@ -57,7 +57,7 @@ public class Button : MonoBehaviour
     {
         if (syrupCount >= maxSyrupCount)
         {
-            this.gameObject.GetComponent<StuckInteractuable>().Changematerial(3);
+            this.gameObject.GetComponent<StuckInteractuable>().Changematerial();
         }
     }
 
