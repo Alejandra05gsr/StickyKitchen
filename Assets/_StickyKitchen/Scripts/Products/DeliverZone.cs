@@ -7,7 +7,7 @@ public class DeliverZone : MonoBehaviour
     public GameObject prefabFood;
     private int plateCount = 0;
     private int foodCount = 0;
-
+    public AudioSource putPlate;
 
 
 
@@ -30,6 +30,7 @@ public class DeliverZone : MonoBehaviour
         if (other.CompareTag("Plate") && plateCount == 0)
         {
             prefabPlate.SetActive(true);
+            putPlate.Play();
             plateCount++;
             Destroy(other.gameObject);
         }

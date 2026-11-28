@@ -30,6 +30,9 @@ public class SpawnPlates : MonoBehaviour
         }
     }
 
+
+
+
     //public void OnCollisionEnter(Collision collision)
     //{
     //    Debug.Log(collision.gameObject.name + " ha colisionado con el botón");

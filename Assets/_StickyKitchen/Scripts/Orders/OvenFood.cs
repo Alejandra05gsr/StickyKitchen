@@ -18,7 +18,9 @@ public class OvenFood : MonoBehaviour
     public GameObject rotationPoint;
     private bool isMoving = false;
 
+    public bool finishCook = false;
 
+    public GameObject door;
     public Tray tray;
 
 
@@ -37,15 +39,14 @@ public class OvenFood : MonoBehaviour
 
     public void Cook() //Cocina el postre
     {
-        //limpiar el horno de los ingredintes
-        tray.DeactivateAllFoodItems();
+        if (finishCook) return;
 
         //Prender el ingrediente de comida que se hizo
-        if (flour.activeInHierarchy && sugar.activeInHierarchy && honey.activeInHierarchy) //Muffins
+        if (flour.activeInHierarchy && sugar.activeInHierarchy && eggs.activeInHierarchy && honey.activeInHierarchy) //Muffins
         {
             muffin.SetActive(true);
         }
-        else if (flour.activeInHierarchy && sugar.activeInHierarchy && butter.activeInHierarchy && eggs.activeInHierarchy && chocolate.activeInHierarchy) //Cookies
+        else if (flour.activeInHierarchy && butter.activeInHierarchy && eggs.activeInHierarchy && chocolate.activeInHierarchy) //Cookies
         {
             cookies.SetActive(true);
         }
@@ -53,40 +54,23 @@ public class OvenFood : MonoBehaviour
         {
             failCook.SetActive(true);
         }
+
+        //limpiar el horno de los ingredientes
+        tray.DeactivateAllFoodItems(); //Duplicado?
+
+        finishCook = true;
     }
 
     public void InteractOven() //Se inicia con este al darle a la palanca
     {
         if (isMoving) return;
 
-        AnimateDoor(initialRotation);
-        Invoke("Cook", 4.0f);
+        finishCook = false;
+
+        door.GetComponent<Oven>().InteractOven(); //Se mueve la puerta del horno
+        Invoke("Cook", 3.0f); //Se activa el postre
     }
 
 
-    public void AnimateDoor(Vector3 targetEuler)
-    {
-        Quaternion targetRotation = Quaternion.Euler(targetEuler);
-        Transform targetTransform = (rotationPoint != null) ? rotationPoint.transform : transform;
-
-        StartCoroutine(RotateDoor(targetTransform, targetRotation));
-    }
-
-    IEnumerator RotateDoor(Transform objectToRotate, Quaternion target)
-    {
-        isMoving = true;
-        Quaternion startRotation = objectToRotate.localRotation;
-        float time = 0f;
-
-        while (time < 1f)
-        {
-            time += Time.deltaTime * rotationSpeed;
-            objectToRotate.localRotation = Quaternion.Slerp(startRotation, target, time);
-            yield return null;
-        }
-
-        objectToRotate.localRotation = target;
-        isMoving = false;
-    }
-
+   
 }

@@ -38,10 +38,6 @@ public class Product : MonoBehaviour
                 idProduct = 5;
                 points = 9;
                 break;
-            case "Coffee":
-                idProduct = 6;
-                points = 15;
-                break;
         }
     }
 }

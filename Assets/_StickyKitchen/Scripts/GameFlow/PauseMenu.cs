@@ -3,6 +3,7 @@ using UnityEngine;
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI;
+    public PlayerController playerController;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -17,6 +18,7 @@ public class PauseMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             pauseMenuUI.SetActive(true);
+            playerController.enabled = false;
             //Prender el mouse
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -28,6 +30,7 @@ public class PauseMenu : MonoBehaviour
 
     public void LockCursor()
     {
+        playerController.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }

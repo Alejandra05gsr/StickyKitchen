@@ -19,9 +19,13 @@ public class GrabProduct : MonoBehaviour
     public Tray tray;
     public Oven ovenDoor;
 
+    [Header("Sonidos al agarrar")]
+    public AudioSource grabPlate, grabFlour, grabEggs, grabSugar, grabButter, grabChocolate, grabHoney, grabMuffin, grabCookies;
+
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (productGrabbed == null && nearbyProduct != null)
             {
@@ -72,6 +76,8 @@ public class GrabProduct : MonoBehaviour
         productGrabbed.transform.position = playerGrabTransform.position;
         productGrabbed.transform.rotation = playerGrabTransform.rotation;
         productGrabbed.transform.SetParent(playerGrabTransform);
+
+        GrabSound(productGrabbed);
 
         if (grabText != null) grabText.gameObject.SetActive(false);
         if (dropText != null) dropText.gameObject.SetActive(true);
@@ -127,7 +133,6 @@ public class GrabProduct : MonoBehaviour
                 // Guarda los puntos acumulados en la puerta del horno
                 if (ovenDoor != null)
                 {
-                    ovenDoor.AccumulatePoints(productPoints);
                     Debug.Log("Puntos sumados: " + productPoints);
                 }
             }
@@ -138,4 +143,30 @@ public class GrabProduct : MonoBehaviour
 
         if (dropText != null) dropText.gameObject.SetActive(false);
     }
+
+    public void GrabSound(GameObject productGrabbing)
+    {
+        //Dependiendo del tag de product grabbing suena un sonidito 
+        switch (productGrabbing.tag)
+        {
+            case "Plate":
+                grabPlate.Play();
+                break;
+            case "Flour":
+                grabFlour.Play();
+                break;
+            case "Eggs":
+                grabEggs.Play();
+                break;
+            case "Sugar":
+                grabSugar.Play();
+                break;
+            case "Butter":
+                grabButter.Play(); break;
+
+        }
+
+
+    }
+
 }

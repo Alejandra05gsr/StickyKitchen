@@ -12,7 +12,7 @@ public class StartOrder : MonoBehaviour
     public GameObject victoryScreenUI;   
     private int completedOrdersCount = 0;
 
-    private bool startMuffins;
+    public bool startMuffins;
     private bool startCookies;
 
     [Header("Prefaba de entrega")]
@@ -28,6 +28,7 @@ public class StartOrder : MonoBehaviour
     void Update()
     {
         CheckOrder();
+        VerifyDelivery();
     }
 
     public void CheckOrder()
@@ -96,10 +97,6 @@ public class StartOrder : MonoBehaviour
 
     private void WinGame()
     {
-        if (victoryScreenUI != null)
-        {
-            victoryScreenUI.SetActive(true);
-        }
-        // SceneManager.LoadScene(Victoria");
+        SceneManager.LoadScene(3);
     }
 }

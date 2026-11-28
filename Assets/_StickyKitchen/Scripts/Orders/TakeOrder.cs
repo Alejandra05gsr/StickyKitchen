@@ -23,6 +23,7 @@ public class TakeOrder : MonoBehaviour
         {
             canTakeOrder = false; // Desactivamos la posibilidad de tomar otra orden hasta que se reinicie
             TakingOrder();
+
         }
     }
 

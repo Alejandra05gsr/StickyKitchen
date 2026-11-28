@@ -3,11 +3,14 @@ using UnityEngine;
 public class Tray : MonoBehaviour
 {
     public GameObject[] foodItems; // Array to hold the food items on the tray
+    public Vector3 initialPos;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        initialPos = this.transform.position;
     }
 
     // Update is called once per frame
@@ -50,4 +53,13 @@ public class Tray : MonoBehaviour
             foodItem.SetActive(false);
         }
     }
+
+
+    public void ResetTrayPosition()
+    {
+        this.transform.position = initialPos;
+    }
+
+
+
 }
